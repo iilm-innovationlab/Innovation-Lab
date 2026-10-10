@@ -658,32 +658,36 @@
     max-width: 100%;
     transform: none !important;
   }
-  .site-header.menu-open .mobile-menu {
+  /* The menu is rendered with createPortal(document.body), so it is not a
+     descendant of .site-header. Target it directly to avoid ineffective rules. */
+  .mobile-menu {
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
+    width: 100% !important;
     max-width: none !important;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
     margin: 0 !important;
+    border: 0 !important;
     border-radius: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    transform: translate3d(100%, 0, 0) !important;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
+    z-index: 10000 !important;
+    transform: translate3d(0, -10px, 0);
   }
-  .site-header.menu-open .mobile-menu.is-open {
-    transform: translate3d(0, 0, 0) !important;
+  .mobile-menu.is-open {
+    transform: translate3d(0, 0, 0);
   }
-  .site-header.menu-open .mobile-menu-grid {
+  .mobile-menu-grid {
     width: 100%;
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100%;
+    min-height: 0 !important;
     box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
   .site-header.menu-open .nav-shell {
     width: calc(100% - 24px);
