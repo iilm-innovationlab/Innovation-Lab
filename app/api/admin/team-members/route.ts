@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { isCloudinaryImageUrl } from "@/lib/cloudinary";
+import { deleteCloudinaryImageIfUnused } from "@/lib/cloudinary-cleanup";
 
 const ALLOWED_TEAMS = new Set(["Campus Innovation Fellow", "Social Media"]);
 const TEAM_APPLICATION_TYPES = new Set(["campus_innovation_fellow", "social_media"]);
@@ -265,10 +266,15 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ ok: false, error: "No team member was deleted. Check database permissions and try again." }, { status: 502 });
     }
 
+    // Delete the database row first. Only then attempt Cloudinary cleanup; an image still
+    // referenced by another active record is retained. Cleanup failure must not undo deletion.
+    const cleanupStatus = await deleteCloudinaryImageIfUnused(auth.url, auth.serviceKey, current.photo_url);
+    if (cleanupStatus === "failed") console.error("Team member was deleted, but its Cloudinary image cleanup needs retry", { teamMemberId: id });
+
     revalidatePath("/team");
     revalidatePath("/");
     revalidateTag("public-team", { expire: 0 });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, cleanupStatus });
   } catch (error) {
     console.error("Team member deletion failed", error);
     return NextResponse.json({ ok: false, error: "Could not delete team member." }, { status: 500 });

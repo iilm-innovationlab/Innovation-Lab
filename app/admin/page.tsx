@@ -635,7 +635,11 @@ function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMe
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || "Could not delete team member");
       onDelete(member.id);
-      onNotify("Team member deleted");
+      onNotify(result.cleanupStatus === "failed"
+        ? "Team member deleted, but Cloudinary cleanup failed. Check server logs."
+        : result.cleanupStatus === "referenced"
+          ? "Team member deleted. The profile image was retained because it is still in use."
+          : "Team member deleted");
     } catch (err) { onNotify(err instanceof Error ? err.message : "Could not delete team member"); }
   };
 
@@ -699,7 +703,7 @@ function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMe
         </div>
       </div>
     </section>}
-    <div className="team-admin-grid">{data.map(m => <article className="team-admin-card" key={m.id}><div className="team-avatar-admin">{m.photoUrl ? <img src={optimizedCloudinaryImageUrl(m.photoUrl, 480)} alt="" loading="lazy" decoding="async" width={480} height={480} /> : m.name.split(" ").map(x => x[0]).join("")}</div><h3>{m.name}</h3><p>{m.role || "Team member"}</p><small>{m.campus} · {m.team}</small>{(m.yearOfStudy || m.degreeProgram) && <small>{[m.yearOfStudy, m.degreeProgram].filter(Boolean).join(" · ")}</small>}<InlineActivity row={activityByRecord.get(String(m.id))} /><footer><Badge status={m.status} /><button disabled={!canEdit} onClick={() => onCycle(m.id)}>{canEdit ? "Toggle publish" : "View"}</button>{canEdit && <button type="button" className="team-edit-action" onClick={() => openEdit(m)}>Edit</button>}{canEdit && <button type="button" className="admin-danger" onClick={() => void remove(m)}>Delete</button>}</footer></article>)}</div>
+    <div className="team-admin-grid">{data.map(m => <article className="team-admin-card" key={m.id}><div className="team-avatar-admin">{m.photoUrl ? <img src={optimizedCloudinaryImageUrl(m.photoUrl, 480)} alt="" loading="lazy" decoding="async" width={480} height={480} /> : m.name.split(" ").map(x => x[0]).join("")}</div><h3>{m.name}</h3><p>{m.role || "Team member"}</p><small className="team-admin-meta">{m.campus} · {m.team}</small>{(m.yearOfStudy || m.degreeProgram) && <small className="team-admin-meta">{[m.yearOfStudy, m.degreeProgram].filter(Boolean).join(" · ")}</small>}{m.email && <a className="team-admin-email" href={`mailto:${m.email}`}>{m.email}</a>}<InlineActivity row={activityByRecord.get(String(m.id))} /><footer><Badge status={m.status} /><button disabled={!canEdit} onClick={() => onCycle(m.id)}>{canEdit ? "Toggle publish" : "View"}</button>{canEdit && <button type="button" className="team-edit-action" onClick={() => openEdit(m)}>Edit</button>}{canEdit && <button type="button" className="admin-danger" onClick={() => void remove(m)}>Delete</button>}</footer></article>)}</div>
   </>;
 }
 
