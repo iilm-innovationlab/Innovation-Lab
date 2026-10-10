@@ -219,3 +219,47 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: false, error: "Could not update team member visibility." }, { status: 500 });
   }
 }
+
+
+export async function DELETE(request: Request) {
+  const auth = await getAuthenticatedProfile(request);
+  if (!auth) return NextResponse.json({ ok: false, error: "Only an authorized admin can delete team members." }, { status: 403 });
+
+  try {
+    const body = await request.json().catch(() => ({}));
+    const id = clean(body.id, 80);
+    if (!id) return NextResponse.json({ ok: false, error: "A team member ID is required." }, { status: 400 });
+
+    const currentResponse = await rest(auth.url, auth.serviceKey, `team_members?id=eq.${encodeURIComponent(id)}&select=*`);
+    if (!currentResponse.ok) return NextResponse.json({ ok: false, error: "Could not load the team member before deletion." }, { status: 502 });
+    const currentRows = await currentResponse.json().catch(() => []);
+    const current = Array.isArray(currentRows) ? currentRows[0] : null;
+    if (!current) return NextResponse.json({ ok: false, error: "Team member not found." }, { status: 404 });
+
+    const actorName = auth.actor.full_name || auth.actor.email || "Admin";
+    const auditResponse = await rest(auth.url, auth.serviceKey, "audit_logs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ table_name: "team_members", record_id: id, action: "DELETE", changed_by: auth.actor.id, changed_by_name: actorName, old_data: current, new_data: null }),
+    });
+    if (!auditResponse.ok) {
+      console.error("Team member deletion audit insert failed", await auditResponse.text().catch(() => ""));
+      return NextResponse.json({ ok: false, error: "Deletion was cancelled because the activity log could not be saved." }, { status: 502 });
+    }
+
+    const deleteResponse = await rest(auth.url, auth.serviceKey, `team_members?id=eq.${encodeURIComponent(id)}`, { method: "DELETE", headers: { Prefer: "return=representation" } });
+    if (!deleteResponse.ok) return NextResponse.json({ ok: false, error: "Could not delete team member from the database." }, { status: 502 });
+    const deletedRows = await deleteResponse.json().catch(() => []);
+    if (!Array.isArray(deletedRows) || !deletedRows.some((row: any) => String(row.id) === id)) {
+      return NextResponse.json({ ok: false, error: "No team member was deleted. Check database permissions and try again." }, { status: 502 });
+    }
+
+    revalidatePath("/team");
+    revalidatePath("/");
+    revalidateTag("public-team", { expire: 0 });
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Team member deletion failed", error);
+    return NextResponse.json({ ok: false, error: "Could not delete team member." }, { status: 500 });
+  }
+}

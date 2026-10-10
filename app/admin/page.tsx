@@ -209,7 +209,7 @@ function AdminStudio({ identity }: { identity: AdminIdentity | null }) {
           {active === "star-ideators" && <StarIdeators onNotify={notify} />}
           {active === "applications" && <Applications data={filteredApps} onNotify={notify} onSaved={(updated) => setApplications(list => list.map(a => a.id === updated.id ? { ...a, ...updated } : a))} onTeamAdded={(member) => setTeam(list => [member, ...list.filter(existing => existing.id !== member.id)])} />}
           {active === "events" && <Events data={filteredEvents} onCycle={cycleEvent} onNotify={notify} onAdd={(event) => setEvents(list => [event, ...list])} />}
-          {active === "team" && <Team data={team} onCycle={cycleTeam} onNotify={notify} role="admin" onAdd={(member) => setTeam(list => [member, ...list])} />}
+          {active === "team" && <Team data={team} onCycle={cycleTeam} onNotify={notify} role="admin" onAdd={(member) => setTeam(list => [member, ...list])} onDelete={(id) => setTeam(list => list.filter(member => member.id !== id))} />}
           {active === "communities" && <Communities counts={communityCounts} onCountsChange={setCommunityCounts} onNotify={notify} />}
           {active === "social" && <Social onNotify={notify} initialShorts={loadedShorts} />}
           {active === "announcements" && <Announcements onNotify={notify} />}
@@ -590,7 +590,7 @@ function Calendar({ events, onNotify, large = false }: { events: EventItem[]; on
   </div>;
 }
 
-function Team({ data, onCycle, onNotify, role, onAdd }: { data: TeamMember[]; onCycle: (id: string) => void; onNotify: (s: string) => void; role: string; onAdd: (member: TeamMember) => void }) {
+function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMember[]; onCycle: (id: string) => void; onNotify: (s: string) => void; role: string; onAdd: (member: TeamMember) => void; onDelete: (id: string) => void }) {
   const activityByRecord = useInlineAudit("team_members");
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
@@ -616,6 +616,20 @@ function Team({ data, onCycle, onNotify, role, onAdd }: { data: TeamMember[]; on
     const reader = new FileReader();
     reader.onload = () => setPhotoPreview(String(reader.result || ""));
     reader.readAsDataURL(file);
+  };
+
+  const remove = async (member: TeamMember) => {
+    if (!canEdit) return onNotify("Only authorized admins can delete team members");
+    if (!window.confirm(`Delete ${member.name} from the team roster? This cannot be undone.`)) return;
+    try {
+      const raw = localStorage.getItem("iilm-admin-session"); const session = raw ? JSON.parse(raw) : null;
+      if (!session?.access_token) throw new Error("Please sign in again before deleting team members.");
+      const response = await fetch("/api/admin/team-members", { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ id: member.id }) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "Could not delete team member");
+      onDelete(member.id);
+      onNotify("Team member deleted");
+    } catch (err) { onNotify(err instanceof Error ? err.message : "Could not delete team member"); }
   };
 
   const create = async () => {
@@ -670,7 +684,7 @@ function Team({ data, onCycle, onNotify, role, onAdd }: { data: TeamMember[]; on
         </div>
       </div>
     </section>}
-    <div className="team-admin-grid">{data.map(m => <article className="team-admin-card" key={m.id}><div className="team-avatar-admin">{m.photoUrl ? <img src={optimizedCloudinaryImageUrl(m.photoUrl, 480)} alt="" loading="lazy" decoding="async" width={480} height={480} /> : m.name.split(" ").map(x => x[0]).join("")}</div><h3>{m.name}</h3><p>{m.role || "Team member"}</p><small>{m.campus} · {m.team}</small><InlineActivity row={activityByRecord.get(String(m.id))} /><footer><Badge status={m.status} /><button disabled={!canEdit} onClick={() => onCycle(m.id)}>{canEdit ? "Toggle publish" : "View"}</button></footer></article>)}</div>
+    <div className="team-admin-grid">{data.map(m => <article className="team-admin-card" key={m.id}><div className="team-avatar-admin">{m.photoUrl ? <img src={optimizedCloudinaryImageUrl(m.photoUrl, 480)} alt="" loading="lazy" decoding="async" width={480} height={480} /> : m.name.split(" ").map(x => x[0]).join("")}</div><h3>{m.name}</h3><p>{m.role || "Team member"}</p><small>{m.campus} · {m.team}</small><InlineActivity row={activityByRecord.get(String(m.id))} /><footer><Badge status={m.status} /><button disabled={!canEdit} onClick={() => onCycle(m.id)}>{canEdit ? "Toggle publish" : "View"}</button>{canEdit && <button type="button" className="admin-danger" onClick={() => void remove(m)}>Delete</button>}</footer></article>)}</div>
   </>;
 }
 
