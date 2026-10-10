@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const groups = [
   { label: "About", items: [["About the Lab", "/#lab"], ["BNV", "/#bnv"]] },
@@ -14,6 +15,7 @@ export default function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [mobileExpandedGroup, setMobileExpandedGroup] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const closeMenu = () => { setOpen(false); requestAnimationFrame(() => toggleRef.current?.focus()); };
@@ -24,25 +26,22 @@ export default function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true }); window.addEventListener("keydown", onKey); onScroll();
     return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("keydown", onKey); };
   }, [open]);
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
-    if (!open) { document.body.style.overflow = ""; document.body.style.touchAction = ""; return; }
-    document.body.style.overflow = "hidden"; document.body.style.touchAction = "none";
-    const timer = window.setTimeout(() => firstLinkRef.current?.focus(), 120);
-    return () => { window.clearTimeout(timer); document.body.style.overflow = ""; document.body.style.touchAction = ""; };
+    const mq = window.matchMedia("(min-width:1001px)");
+    const onChange = () => { if (mq.matches) setOpen(false); };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  useEffect(() => {
+    if (!open) return;
+    const html = document.documentElement, body = document.body;
+    html.style.overflow = "hidden"; body.style.overflow = "hidden";
+    const timer = window.setTimeout(() => firstLinkRef.current?.focus({ preventScroll: true }), 120);
+    return () => { window.clearTimeout(timer); html.style.overflow = ""; body.style.overflow = ""; };
   }, [open]);
 
-  return <header className={`site-header ${scrolled ? "is-scrolled" : ""} ${open ? "menu-open" : ""}`} data-menu-open={open ? "true" : "false"}>
-    <div className="nav-progress" style={{ width: `${progress}%` }} aria-hidden="true" />
-    <div className="nav-shell">
-      <Link href="/" className="brand-lockup" aria-label="IILM × BNV Innovation Lab" onClick={() => setOpen(false)}><Image src={open ? "/iilm-bnv-logo-user-light-cropped.webp" : "/iilm-bnv-logo-user-cropped.webp"} alt="IILM × BNV Innovation Lab" width={1863} height={336} priority unoptimized className="brand-logo" /></Link>
-      <nav className="desktop-nav" aria-label="Primary navigation">
-        <Link className="nav-home-link" href="/">Home</Link>
-        {groups.map(group => <div className="nav-dropdown" key={group.label}><button type="button" className="nav-group-trigger" aria-haspopup="true">{group.label}<span>⌄</span></button><div className="nav-dropdown-panel">{group.items.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}</div></div>)}
-      </nav>
-      <Link href="/join" className="nav-cta" data-cursor onClick={() => setOpen(false)}>Join the Lab <span>↗</span></Link>
-      <button ref={toggleRef} type="button" className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => setOpen(v => !v)} aria-label={open ? "Close navigation menu" : "Open navigation menu"} aria-expanded={open} aria-controls="mobile-navigation"><span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" /><b aria-hidden="true">{open ? "CLOSE" : "MENU"}</b></button>
-    </div>
-    <div className={`mobile-menu-backdrop ${open ? "is-open" : ""}`} aria-hidden="true" onClick={closeMenu} />
+  const menu = (
     <div className={`mobile-menu ${open ? "is-open" : ""}`} id="mobile-navigation" aria-hidden={!open}>
       <div className="mobile-menu-grid"><div className="mobile-menu-meta"><span>01 / NAVIGATION</span><p>Find your next step.</p></div>
         <nav className="mobile-menu-links" aria-label="Mobile navigation">
@@ -57,5 +56,18 @@ export default function SiteHeader() {
         </nav><div className="mobile-menu-footer"><span>IILM × BNV INNOVATION LAB</span><span>EXPLORE · IDEATE · BUILD</span></div>
       </div>
     </div>
-  </header>;
+  );
+
+  return <><header className={`site-header ${scrolled ? "is-scrolled" : ""} ${open ? "menu-open" : ""}`} data-menu-open={open ? "true" : "false"}>
+    <div className="nav-progress" style={{ width: `${progress}%` }} aria-hidden="true" />
+    <div className="nav-shell">
+      <Link href="/" className="brand-lockup" aria-label="IILM × BNV Innovation Lab" onClick={() => setOpen(false)}><Image src={open ? "/iilm-bnv-logo-user-light-cropped.webp" : "/iilm-bnv-logo-user-cropped.webp"} alt="IILM × BNV Innovation Lab" width={1863} height={336} priority unoptimized className="brand-logo" /></Link>
+      <nav className="desktop-nav" aria-label="Primary navigation">
+        <Link className="nav-home-link" href="/">Home</Link>
+        {groups.map(group => <div className="nav-dropdown" key={group.label}><button type="button" className="nav-group-trigger" aria-haspopup="true">{group.label}<span>⌄</span></button><div className="nav-dropdown-panel">{group.items.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}</div></div>)}
+      </nav>
+      <Link href="/join" className="nav-cta" data-cursor onClick={() => setOpen(false)}>Join the Lab <span>↗</span></Link>
+      <button ref={toggleRef} type="button" className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => setOpen(v => !v)} aria-label={open ? "Close navigation menu" : "Open navigation menu"} aria-expanded={open} aria-controls="mobile-navigation"><span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" /><b aria-hidden="true">{open ? "CLOSE" : "MENU"}</b></button>
+    </div>
+  </header>{mounted && createPortal(menu, document.body)}</>;
 }

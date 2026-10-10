@@ -276,16 +276,15 @@
 }
 @media(prefers-reduced-motion:reduce){.fun-missions:before,.fun-mission-card,.fun-mission-arrow{animation:none!important}}
 
-/* Mobile navigation v2 — robust drawer, tactile controls and clear focus states. */
+/* Mobile navigation v3 — true viewport-level full-screen overlay (rendered in a body portal). */
 @media (max-width:1000px){
   .site-header{isolation:isolate}
   .nav-shell{position:relative;z-index:130}
   .menu-toggle{min-width:48px;min-height:48px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  .mobile-menu-backdrop{position:fixed;inset:0;z-index:108;background:rgba(5,17,34,.56);backdrop-filter:blur(4px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s ease,visibility 0s linear .45s}
-  .mobile-menu-backdrop.is-open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .35s ease}
-  .mobile-menu{z-index:110!important;width:min(92vw,520px);height:100svh;left:auto!important;right:0!important;top:0!important;bottom:0!important;background:var(--navy);box-shadow:-24px 0 80px rgba(0,0,0,.28);transform:translate3d(105%,0,0)!important;opacity:1!important;visibility:visible!important;pointer-events:none;transition:transform .62s var(--ease)!important;overscroll-behavior:contain}
-  .mobile-menu.is-open{transform:translate3d(0,0,0)!important;pointer-events:auto;transition:transform .62s var(--ease)!important}
-  .mobile-menu-grid{height:100%;min-height:100svh;padding:104px 34px 28px;overflow-y:auto;overscroll-behavior:contain}
+  .mobile-menu-backdrop{display:none!important}
+  .mobile-menu{position:fixed;inset:0;width:100%;max-width:none;height:100vh;height:100dvh;z-index:150;display:block;background:var(--navy);box-shadow:none;transform:translate3d(0,-10px,0);opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;overscroll-behavior:contain;transition:opacity .4s ease,transform .6s var(--ease),visibility 0s linear .6s}
+  .mobile-menu.is-open{transform:none;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .4s ease,transform .6s var(--ease),visibility 0s}
+  .mobile-menu-grid{height:100%;min-height:0;padding:104px 34px 28px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   .mobile-menu-meta{padding-bottom:22px}
   .mobile-menu-links a{min-height:58px;padding:15px 0}
   .mobile-menu-links a:focus-visible{outline:2px solid var(--pink);outline-offset:7px;border-radius:4px}
@@ -297,7 +296,6 @@
   .brand-lockup{width:min(63vw,205px)}
   .menu-toggle{width:46px;height:46px;flex-basis:46px}
   .menu-toggle b{bottom:-17px}
-  .mobile-menu{width:100vw}
   .mobile-menu-grid{padding:92px 22px 24px}
   .mobile-menu-meta{padding-bottom:18px}
   .mobile-menu-links{margin:22px 0 auto}
