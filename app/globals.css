@@ -696,18 +696,57 @@
   }
 }
 
-/* Precise mobile header adjustment: keep changes limited to the navbar. */
+/* Mobile header layout: hamburger on the left, logo centered. */
 @media (max-width: 680px) {
-  .site-header .nav-shell .brand-lockup {
-    width: 125px !important;
-    max-width: 125px !important;
-    flex: 0 0 125px !important;
+  .site-header .nav-shell {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    min-height: 72px;
+    padding-inline: 14px !important;
+    box-sizing: border-box;
   }
+
   .site-header .nav-shell .menu-toggle {
-    margin-left: auto !important;
-    margin-right: 8px !important;
+    position: relative !important;
+    order: 0 !important;
+    z-index: 2;
+    margin: 0 auto 0 0 !important;
     flex: 0 0 46px !important;
     width: 46px !important;
     min-width: 46px !important;
   }
+
+  .site-header .nav-shell .brand-lockup {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 145px !important;
+    max-width: 145px !important;
+    flex: 0 0 145px !important;
+    margin: 0 !important;
+  }
+
+  .site-header .nav-shell .brand-lockup .brand-logo {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+  }
+}
+
+
+/* Ensure the mobile toggle stays above the portaled menu so it can close it. */
+@media (max-width: 1000px) {
+  .site-header.menu-open { z-index: 10001 !important; pointer-events: auto; }
+  .site-header.menu-open .nav-shell,
+  .site-header.menu-open .menu-toggle { pointer-events: auto !important; }
+  .site-header.menu-open .menu-toggle { position: relative; z-index: 10002 !important; }
+  .mobile-menu { z-index: 10000 !important; }
 }

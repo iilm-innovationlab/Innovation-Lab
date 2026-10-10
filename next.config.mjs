@@ -6,6 +6,8 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
+  // Permit the trusted LAN address used to open the dev server on a phone.
+  allowedDevOrigins: ['10.0.46.131'],
   poweredByHeader: false,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
