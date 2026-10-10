@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { optimizedCloudinaryImageUrl } from "@/lib/cloudinary-url";
-type TeamMember = { id: string; name: string; role?: string | null; campus?: string | null; team?: string | null; photo_url?: string | null; bio?: string | null; linkedin_url?: string | null; degree?: string | null; program?: string | null; year?: string | null };
+type TeamMember = { id: string; name: string; role?: string | null; campus?: string | null; team?: string | null; photo_url?: string | null; bio?: string | null; linkedin_url?: string | null; degree?: string | null; program?: string | null; year?: string | null; degree_program?: string | null; year_of_study?: string | null };
 
 function rotate<T>(items: T[], by: number) {
   const n = items.length;

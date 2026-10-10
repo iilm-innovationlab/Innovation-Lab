@@ -505,10 +505,6 @@ function Events({ data, onCycle, onNotify, onAdd }: { data: EventItem[]; onCycle
   const activityByRecord = useInlineAudit("events");
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState(""); const [date, setDate] = useState(""); const [time, setTime] = useState(""); const [community, setCommunity] = useState("Explorer"); const [registration, setRegistration] = useState(""); const [description, setDescription] = useState(""); const [saving, setSaving] = useState(false); const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
-  const openEdit = (member: TeamMember) => {
-    setEditingMember(member); setName(member.name || ""); setMemberRole(member.role || ""); setCampus(member.campus || "Greater Noida"); setTeam(member.team || "Campus Innovation Fellow"); setYearOfStudy(member.yearOfStudy || "First Year"); setDegreeProgram(member.degreeProgram || ""); setContactEmail(member.email || ""); setPhotoFile(null); setPhotoPreview(member.photoUrl || ""); setShowForm(true);
-  };
-
   const create = async () => {
     if (!title.trim() || !date.trim()) return onNotify("Add an event title and date first");
     const match = date.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -609,6 +605,10 @@ function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMe
   const [photoPreview, setPhotoPreview] = useState("");
   const [saving, setSaving] = useState(false);
   const canEdit = role === "admin";
+
+  const openEdit = (member: TeamMember) => {
+    setEditingMember(member); setName(member.name || ""); setMemberRole(member.role || ""); setCampus(member.campus || "Greater Noida"); setTeam(member.team || "Campus Innovation Fellow"); setYearOfStudy(member.yearOfStudy || "First Year"); setDegreeProgram(member.degreeProgram || ""); setContactEmail(member.email || ""); setPhotoFile(null); setPhotoPreview(member.photoUrl || ""); setShowForm(true);
+  };
 
   const resetForm = () => {
     setName(""); setMemberRole(""); setCampus("Greater Noida"); setTeam("Campus Innovation Fellow");
