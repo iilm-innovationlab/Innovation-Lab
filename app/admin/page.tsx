@@ -14,7 +14,7 @@ type ModuleKey = "overview" | "applications" | "events" | "team" | "communities"
 
 type Application = { id: string; name: string; type: string; email: string; stage: string; status: Status; date: string; phone?: string; campus?: string; degree?: string; year?: string; idea?: string; problem?: string; targetUsers?: string; prototypeUrl?: string; message?: string; reviewNotes?: string; payload?: Record<string, unknown>; createdAt?: string; profilePictureUrl?: string; archivedAt?: string };
 type EventItem = { id: string; title: string; date: string; community: string; status: Status; updatedBy?: string; startsAt?: string; description?: string; registrationUrl?: string; createdAt?: string };
-type TeamMember = { id: string; name: string; role?: string; campus: string; team: string; status: Status; email?: string; photoUrl?: string };
+type TeamMember = { id: string; name: string; role?: string; campus: string; team: string; status: Status; email?: string; photoUrl?: string; yearOfStudy?: string; degreeProgram?: string };
 
 const nav: { key: ModuleKey; label: string; icon: string; badge?: string }[] = [
   { key: "overview", label: "Overview", icon: "⌂" },
@@ -104,14 +104,14 @@ function AdminStudio({ identity }: { identity: AdminIdentity | null }) {
         const [apps, eventRows, teamRows, communityRows, shortRows] = await Promise.all([
           restSelect("applications", session.access_token, "select=id,type,full_name,email,current_stage,status,created_at,archived_at,profile_picture_url,phone,campus,degree,year,idea,problem,target_users,prototype_url,message,review_notes,payload&order=created_at.desc&limit=500"),
           restSelect("events", session.access_token, "select=*&order=starts_at.asc&limit=100"),
-          restSelect("team_members", session.access_token, "select=id,name,role,campus,team,email,photo_url,published&order=display_order.asc&limit=50"),
+          restSelect("team_members", session.access_token, "select=id,name,role,campus,team,year_of_study,degree_program,email,photo_url,published&order=display_order.asc&limit=50"),
           restSelect("communities", session.access_token, "select=name,member_count&order=name.asc&limit=10"),
           restSelect("youtube_shorts", session.access_token, "select=youtube_id,published,title&order=display_order.asc&limit=30")
         ]);
         if (cancelled) return;
         if (Array.isArray(apps)) setApplications(apps.map((a:any) => ({ id:a.id, name:a.full_name, type:({campus_innovation_fellow:"Campus Innovation Fellow",social_media:"Social Media",explorer:"Explorer",ideator:"Ideator"} as Record<string,string>)[a.type] || a.type, email:a.email, stage:(({idea:"Idea stage",research:"Researching the problem",validation:"Validating with users",prototype:"Building a prototype",mvp:"MVP / early product",team_application:"Applying to join the team",event_volunteering:"Event and community work",project_execution:"Project execution",outreach:"Outreach and partnerships"} as Record<string,string>)[a.current_stage] || a.current_stage || "—"), status:({new:"New",review:"Review",accepted:"Active",active:"Active",rejected:"Draft"} as Record<string,Status>)[a.status] || "New", date:a.created_at ? new Date(a.created_at).toLocaleDateString() : "—", createdAt:a.created_at, archivedAt:a.archived_at || undefined, profilePictureUrl:a.profile_picture_url || undefined, phone:a.phone || "", campus:a.campus || "", degree:a.degree || "", year:a.year || "", idea:a.idea || "", problem:a.problem || "", targetUsers:a.target_users || "", prototypeUrl:a.prototype_url || "", message:a.message || "", reviewNotes:a.review_notes || "", payload:a.payload && typeof a.payload === "object" ? a.payload : {} })));
         if (Array.isArray(eventRows)) setEvents(eventRows.map((e:any) => ({ id:e.id, title:e.title, date:formatEventDate(e.starts_at), community:e.community || "Lab", status:e.status === "published" ? "Published" : "Draft", updatedBy:e.updated_by_name || "—", startsAt:e.starts_at || undefined, description:e.description || "", registrationUrl:e.registration_url || "", createdAt:e.created_at || undefined })));
-        if (Array.isArray(teamRows)) setTeam(teamRows.map((m:any) => ({ id:m.id, name:m.name, role:m.role || undefined, campus:m.campus || "—", team:m.team || "—", status:m.published ? "Published" : "Draft", email:m.email || undefined, photoUrl:m.photo_url || undefined })));
+        if (Array.isArray(teamRows)) setTeam(teamRows.map((m:any) => ({ id:m.id, name:m.name, role:m.role || undefined, campus:m.campus || "—", team:m.team || "—", yearOfStudy:m.year_of_study || undefined, degreeProgram:m.degree_program || undefined, status:m.published ? "Published" : "Draft", email:m.email || undefined, photoUrl:m.photo_url || undefined })));
         if (Array.isArray(communityRows)) setCommunityCounts(Object.fromEntries(communityRows.map((c:any) => [c.name, Number(c.member_count || 0)])));
         if (Array.isArray(shortRows)) setLoadedShorts(shortRows.map((row: any) => row.youtube_id).filter((id: unknown): id is string => typeof id === "string"));
       } catch (err) {
@@ -209,7 +209,7 @@ function AdminStudio({ identity }: { identity: AdminIdentity | null }) {
           {active === "star-ideators" && <StarIdeators onNotify={notify} />}
           {active === "applications" && <Applications data={filteredApps} onNotify={notify} onSaved={(updated) => setApplications(list => list.map(a => a.id === updated.id ? { ...a, ...updated } : a))} onTeamAdded={(member) => setTeam(list => [member, ...list.filter(existing => existing.id !== member.id)])} />}
           {active === "events" && <Events data={filteredEvents} onCycle={cycleEvent} onNotify={notify} onAdd={(event) => setEvents(list => [event, ...list])} />}
-          {active === "team" && <Team data={team} onCycle={cycleTeam} onNotify={notify} role="admin" onAdd={(member) => setTeam(list => [member, ...list])} onDelete={(id) => setTeam(list => list.filter(member => member.id !== id))} />}
+          {active === "team" && <Team data={team} onCycle={cycleTeam} onNotify={notify} role="admin" onAdd={(member) => setTeam(list => [member, ...list.filter(existing => existing.id !== member.id)])} onDelete={(id) => setTeam(list => list.filter(member => member.id !== id))} />}
           {active === "communities" && <Communities counts={communityCounts} onCountsChange={setCommunityCounts} onNotify={notify} />}
           {active === "social" && <Social onNotify={notify} initialShorts={loadedShorts} />}
           {active === "announcements" && <Announcements onNotify={notify} />}
@@ -505,6 +505,10 @@ function Events({ data, onCycle, onNotify, onAdd }: { data: EventItem[]; onCycle
   const activityByRecord = useInlineAudit("events");
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState(""); const [date, setDate] = useState(""); const [time, setTime] = useState(""); const [community, setCommunity] = useState("Explorer"); const [registration, setRegistration] = useState(""); const [description, setDescription] = useState(""); const [saving, setSaving] = useState(false); const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+  const openEdit = (member: TeamMember) => {
+    setEditingMember(member); setName(member.name || ""); setMemberRole(member.role || ""); setCampus(member.campus || "Greater Noida"); setTeam(member.team || "Campus Innovation Fellow"); setYearOfStudy(member.yearOfStudy || "First Year"); setDegreeProgram(member.degreeProgram || ""); setContactEmail(member.email || ""); setPhotoFile(null); setPhotoPreview(member.photoUrl || ""); setShowForm(true);
+  };
+
   const create = async () => {
     if (!title.trim() || !date.trim()) return onNotify("Add an event title and date first");
     const match = date.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -593,10 +597,13 @@ function Calendar({ events, onNotify, large = false }: { events: EventItem[]; on
 function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMember[]; onCycle: (id: string) => void; onNotify: (s: string) => void; role: string; onAdd: (member: TeamMember) => void; onDelete: (id: string) => void }) {
   const activityByRecord = useInlineAudit("team_members");
   const [showForm, setShowForm] = useState(false);
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [name, setName] = useState("");
   const [memberRole, setMemberRole] = useState("");
   const [campus, setCampus] = useState("Greater Noida");
   const [team, setTeam] = useState("Campus Innovation Fellow");
+  const [yearOfStudy, setYearOfStudy] = useState("First Year");
+  const [degreeProgram, setDegreeProgram] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState("");
@@ -605,7 +612,7 @@ function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMe
 
   const resetForm = () => {
     setName(""); setMemberRole(""); setCampus("Greater Noida"); setTeam("Campus Innovation Fellow");
-    setContactEmail(""); setPhotoFile(null); setPhotoPreview(""); setShowForm(false);
+    setYearOfStudy("First Year"); setDegreeProgram(""); setContactEmail(""); setPhotoFile(null); setPhotoPreview(""); setEditingMember(null); setShowForm(false);
   };
 
   const handlePhoto = (file: File | null) => {
@@ -635,10 +642,11 @@ function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMe
   const create = async () => {
     if (!canEdit) return onNotify("Only authorized admins can add team members");
     if (!name.trim()) return onNotify("Add the member's full name first");
+    if (!degreeProgram.trim()) return onNotify("Enter the degree program");
     setSaving(true);
     try {
       const raw = localStorage.getItem("iilm-admin-session"); const session = raw ? JSON.parse(raw) : null;
-      const body: Record<string, string> = { name: name.trim(), role: memberRole.trim(), campus, team };
+      const body: Record<string, string> = { name: name.trim(), role: memberRole.trim(), campus, team, year_of_study: yearOfStudy, degree_program: degreeProgram.trim() };
       if (contactEmail.trim()) body.contact_email = contactEmail.trim();
       if (photoFile) {
         // Signed upload details come from Vercel; the image itself goes straight to Cloudinary.
@@ -646,13 +654,18 @@ function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMe
       }
 
       if (supabaseConfigured && session?.access_token) {
-        const response = await fetch("/api/admin/team-members", { method: "POST", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        if (editingMember) {
+          body.id = editingMember.id;
+          if (!photoFile && editingMember.photoUrl) body.photo_url = editingMember.photoUrl;
+        }
+        const response = await fetch("/api/admin/team-members", { method: editingMember ? "PATCH" : "POST", headers: { Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify(body) });
         const result = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(result?.error || "Could not add team member");
-        const member: TeamMember = { id: result.member.id, name: result.member.name, role: result.member.role || undefined, campus: result.member.campus, team: result.member.team, status: "Published", email: result.member.email || undefined, photoUrl: result.member.photo_url || undefined };
-        onAdd(member);
+        if (!response.ok) throw new Error(result?.error || (editingMember ? "Could not update team member" : "Could not add team member"));
+        const row = result.member;
+        const member: TeamMember = { id: row.id, name: row.name, role: row.role || undefined, campus: row.campus, team: row.team, yearOfStudy: row.year_of_study || yearOfStudy, degreeProgram: row.degree_program || degreeProgram.trim(), status: row.published === false ? "Draft" : "Published", email: row.email || undefined, photoUrl: row.photo_url || undefined };
+        if (editingMember) onAdd(member); else onAdd(member);
         resetForm();
-        onNotify("Team profile added. Create any required sign-in account separately if needed.");
+        onNotify(editingMember ? "Team profile updated" : "Team profile added. Create any required sign-in account separately if needed.");
       } else {
         throw new Error("Admin services are unavailable or your session has expired. No team account was created.");
       }
@@ -662,7 +675,7 @@ function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMe
   return <>
     <PageIntro eyebrow="THE PEOPLE BEHIND IT" title="Meet the team" description="Admins can manage the public team roster and onboard approved members." action={canEdit ? "Add new member" : undefined} onAction={() => setShowForm(true)} />
     {showForm && <section className="admin-card composer-card team-composer">
-      <div className="admin-card-head composer-head"><div><span>NEW TEAM MEMBER · ADMIN</span><h3>Create a team profile.</h3><p>This adds a public roster profile only. It does not create an Auth user or generate credentials.</p></div><button className="composer-close" onClick={resetForm}>Close</button></div>
+      <div className="admin-card-head composer-head"><div><span>{editingMember ? "EDIT TEAM MEMBER · ADMIN" : "NEW TEAM MEMBER · ADMIN"}</span><h3>{editingMember ? "Update this team profile." : "Create a team profile."}</h3><p>This manages the public roster profile only. It does not create an Auth user or generate credentials.</p></div><button className="composer-close" onClick={resetForm}>Close</button></div>
       <div className="composer-layout team-composer-layout">
         <aside className="profile-preview">
           <span className="preview-kicker">PROFILE PREVIEW</span>
@@ -675,16 +688,18 @@ function Team({ data, onCycle, onNotify, role, onAdd, onDelete }: { data: TeamMe
           <div className="composer-grid two-col">
             <label className="composer-field"><span>Full name <em>Required</em></span><input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Aanya Sharma" /></label>
             <label className="composer-field"><span>Role <small>Optional</small></span><input value={memberRole} onChange={e=>setMemberRole(e.target.value)} placeholder="e.g. Content Lead" /></label>
-            <label className="composer-field"><span>Campus</span><select value={campus} onChange={e=>setCampus(e.target.value)}><option>Greater Noida</option><option>Gurugram</option><option>Rohtak</option><option>Lodhi Road</option></select></label>
+            <label className="composer-field"><span>Campus <em>Required</em></span><select value={campus} onChange={e=>setCampus(e.target.value)}><option>Greater Noida</option><option>Gurugram</option><option>Rohtak</option><option>Lodhi Road</option><option>Jaipur</option></select></label>
             <label className="composer-field"><span>Team <em>Required</em></span><select value={team} onChange={e=>setTeam(e.target.value)}><option>Campus Innovation Fellow</option><option>Social Media</option></select></label>
+            <label className="composer-field"><span>Year of study <em>Required</em></span><select value={yearOfStudy} onChange={e=>setYearOfStudy(e.target.value)}><option>First Year</option><option>Second Year</option><option>Third Year</option><option>Fourth Year</option></select></label>
+            <label className="composer-field"><span>Degree program <em>Required</em></span><input value={degreeProgram} onChange={e=>setDegreeProgram(e.target.value)} placeholder="e.g. B.Tech CSE (AI/ML)" maxLength={160} /></label>
             <label className="composer-field field-full"><span>Contact email <small>Optional · does not create a login</small></span><input type="email" value={contactEmail} onChange={e=>setContactEmail(e.target.value)} placeholder="member@iilm.edu" /></label>
             <label className="composer-field field-full"><span>Profile picture <small>Optional · JPG, PNG, WebP · max 5 MB</small></span><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>handlePhoto(e.target.files?.[0] || null)} /></label>
           </div>
-          <div className="composer-actions"><button className="admin-secondary" onClick={resetForm}>Cancel</button><button className="admin-primary" disabled={saving} onClick={create}>{saving?"Adding profile…":"Add team profile ↗"}</button></div>
+          <div className="composer-actions"><button className="admin-secondary" onClick={resetForm}>Cancel</button><button className="admin-primary" disabled={saving} onClick={create}>{saving?(editingMember?"Saving changes…":"Adding profile…"):(editingMember?"Save changes ↗":"Add team profile ↗")}</button></div>
         </div>
       </div>
     </section>}
-    <div className="team-admin-grid">{data.map(m => <article className="team-admin-card" key={m.id}><div className="team-avatar-admin">{m.photoUrl ? <img src={optimizedCloudinaryImageUrl(m.photoUrl, 480)} alt="" loading="lazy" decoding="async" width={480} height={480} /> : m.name.split(" ").map(x => x[0]).join("")}</div><h3>{m.name}</h3><p>{m.role || "Team member"}</p><small>{m.campus} · {m.team}</small><InlineActivity row={activityByRecord.get(String(m.id))} /><footer><Badge status={m.status} /><button disabled={!canEdit} onClick={() => onCycle(m.id)}>{canEdit ? "Toggle publish" : "View"}</button>{canEdit && <button type="button" className="admin-danger" onClick={() => void remove(m)}>Delete</button>}</footer></article>)}</div>
+    <div className="team-admin-grid">{data.map(m => <article className="team-admin-card" key={m.id}><div className="team-avatar-admin">{m.photoUrl ? <img src={optimizedCloudinaryImageUrl(m.photoUrl, 480)} alt="" loading="lazy" decoding="async" width={480} height={480} /> : m.name.split(" ").map(x => x[0]).join("")}</div><h3>{m.name}</h3><p>{m.role || "Team member"}</p><small>{m.campus} · {m.team}</small>{(m.yearOfStudy || m.degreeProgram) && <small>{[m.yearOfStudy, m.degreeProgram].filter(Boolean).join(" · ")}</small>}<InlineActivity row={activityByRecord.get(String(m.id))} /><footer><Badge status={m.status} /><button disabled={!canEdit} onClick={() => onCycle(m.id)}>{canEdit ? "Toggle publish" : "View"}</button>{canEdit && <button type="button" className="team-edit-action" onClick={() => openEdit(m)}>Edit</button>}{canEdit && <button type="button" className="admin-danger" onClick={() => void remove(m)}>Delete</button>}</footer></article>)}</div>
   </>;
 }
 

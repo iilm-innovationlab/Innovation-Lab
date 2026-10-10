@@ -9,12 +9,11 @@ const groups = [
   { label: "Discover", items: [["Announcements", "/#announcements"], ["Events", "/#events"], ["Portfolio", "/#portfolio"], ["Team", "/#team"]] },
   { label: "Resources", items: [["Resources", "/#resources"], ["FAQs", "/#faq"], ["YouTube Shorts", "/#youtube-shorts"]] },
 ] as const;
-const allLinks = [["Home", "/", "01"], ["About the Lab", "/#lab", "02"], ["BNV", "/#bnv", "03"], ["Announcements", "/#announcements", "04"], ["Journey", "/#journey", "05"], ["Communities", "/#explorer", "06"], ["Star Ideators", "/#star-ideators", "07"], ["Team", "/#team", "08"], ["Opportunities", "/#join-team", "09"], ["Portfolio", "/#portfolio", "10"], ["Resources", "/#resources", "11"], ["FAQs", "/#faq", "12"], ["Events", "/#events", "13"], ["YouTube Shorts", "/#youtube-shorts", "14"]] as const;
-
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [mobileExpandedGroup, setMobileExpandedGroup] = useState<string | null>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const closeMenu = () => { setOpen(false); requestAnimationFrame(() => toggleRef.current?.focus()); };
@@ -47,8 +46,14 @@ export default function SiteHeader() {
     <div className={`mobile-menu ${open ? "is-open" : ""}`} id="mobile-navigation" aria-hidden={!open}>
       <div className="mobile-menu-grid"><div className="mobile-menu-meta"><span>01 / NAVIGATION</span><p>Find your next step.</p></div>
         <nav className="mobile-menu-links" aria-label="Mobile navigation">
-          {allLinks.map(([label, href, number], index) => <Link key={label} href={href} ref={index === 0 ? firstLinkRef : undefined} tabIndex={open ? 0 : -1} onClick={closeMenu}><span>{number}</span><strong>{label}</strong><i>↗</i></Link>)}
-          <Link href="/join" className="mobile-menu-cta" tabIndex={open ? 0 : -1} onClick={closeMenu}><span>15</span><strong>Join the Lab</strong><i>→</i></Link>
+          <Link className="mobile-menu-home" href="/" ref={firstLinkRef} tabIndex={open ? 0 : -1} onClick={closeMenu}><span>01</span><strong>Home</strong><i>↗</i></Link>
+          {groups.map((group, groupIndex) => <div className={`mobile-nav-category ${mobileExpandedGroup === group.label ? "is-expanded" : ""}`} key={group.label}>
+            <button type="button" className="mobile-nav-category-trigger" aria-expanded={mobileExpandedGroup === group.label} onClick={() => setMobileExpandedGroup(current => current === group.label ? null : group.label)} tabIndex={open ? 0 : -1}><span>{String(groupIndex + 2).padStart(2, "0")}</span><strong>{group.label}</strong><i aria-hidden="true">⌄</i></button>
+            <div className="mobile-nav-category-panel" hidden={mobileExpandedGroup !== group.label}>
+              {group.items.map(([label, href]) => <Link key={label} href={href} tabIndex={open && mobileExpandedGroup === group.label ? 0 : -1} onClick={closeMenu}>{label}<i aria-hidden="true">↗</i></Link>)}
+            </div>
+          </div>)}
+          <Link href="/join" className="mobile-menu-cta" tabIndex={open ? 0 : -1} onClick={closeMenu}><span>06</span><strong>Join the Lab</strong><i>→</i></Link>
         </nav><div className="mobile-menu-footer"><span>IILM × BNV INNOVATION LAB</span><span>EXPLORE · IDEATE · BUILD</span></div>
       </div>
     </div>

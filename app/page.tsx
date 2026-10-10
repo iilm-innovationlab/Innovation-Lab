@@ -58,7 +58,7 @@ async function getPublishedTeam() {
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) return [];
   try {
-    const res = await fetch(`${url}/rest/v1/team_members?select=id,name,role,campus,team,photo_url,bio,linkedin_url&published=eq.true&order=display_order.asc&limit=30`, { headers: { apikey: anon }, next: { revalidate: 600, tags: ["public-team"] } });
+    const res = await fetch(`${url}/rest/v1/team_members?select=id,name,role,campus,team,year_of_study,degree_program,photo_url,bio,linkedin_url&published=eq.true&order=display_order.asc&limit=30`, { headers: { apikey: anon }, next: { revalidate: 600, tags: ["public-team"] } });
     return res.ok ? await res.json() : [];
   } catch { return []; }
 }

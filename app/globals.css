@@ -610,3 +610,26 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+/* Team profile edit action */
+.team-admin-card footer .team-edit-action{border:1px solid #d9e0e7;border-radius:999px;padding:9px 13px;background:#f6f8fa;color:#0b2545;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer}.team-admin-card footer .team-edit-action:hover{background:#0b2545;color:#fff}
+/* Mobile navigation: compact directory with comfortable touch targets and no oversized links. */
+@media(max-width:1000px){.mobile-menu-grid{min-height:100svh;padding:92px 22px 22px;gap:16px}.mobile-menu-meta{padding-bottom:14px}.mobile-menu-meta p{font-size:12px}.mobile-menu-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;align-content:start}.mobile-menu-links a{grid-template-columns:24px minmax(0,1fr) 16px;gap:6px;padding:13px 10px;border:1px solid rgba(255,255,255,.13);border-radius:12px;min-height:58px;transform:none;opacity:1;background:rgba(255,255,255,.035)}.mobile-menu-links strong{font-size:clamp(13px,3.6vw,17px);line-height:1.15;letter-spacing:-.025em;overflow-wrap:anywhere}.mobile-menu-links a>span{font-size:8px}.mobile-menu-links a>i{font-size:15px}.mobile-menu-links .mobile-menu-cta{grid-column:1/-1;margin-top:2px;padding:14px;border-radius:12px;min-height:54px}.mobile-menu-links .mobile-menu-cta strong{font-size:17px}.mobile-menu-footer{margin-top:auto;padding-top:14px}.mobile-menu.is-open .mobile-menu-links a{opacity:1;transform:none}.mobile-menu.is-open .mobile-menu-links a:nth-child(n){transition-delay:0s}}
+@media(max-width:380px){.mobile-menu-grid{padding:86px 16px 18px}.mobile-menu-links{grid-template-columns:1fr}.mobile-menu-links a{min-height:48px}.mobile-menu-footer{display:none}}
+
+/* Mobile category accordions mirror the desktop navigation groups; scoped to the mobile menu only. */
+@media(max-width:1000px){
+  .mobile-menu-links .mobile-nav-category{min-width:0;align-self:start}
+  .mobile-menu-links .mobile-nav-category-trigger{width:100%;display:grid;grid-template-columns:24px minmax(0,1fr) 16px;align-items:center;gap:6px;min-height:58px;padding:13px 10px;border:1px solid rgba(255,255,255,.13);border-radius:12px;background:rgba(255,255,255,.035);color:inherit;text-align:left;cursor:pointer}
+  .mobile-menu-links .mobile-nav-category-trigger strong{font-size:clamp(13px,3.6vw,17px);line-height:1.15;letter-spacing:-.025em;overflow-wrap:anywhere}
+  .mobile-menu-links .mobile-nav-category-trigger>span{font-size:8px;opacity:.7}
+  .mobile-menu-links .mobile-nav-category-trigger>i{font-size:17px;font-style:normal;justify-self:center;transition:transform .2s ease}
+  .mobile-menu-links .mobile-nav-category.is-expanded .mobile-nav-category-trigger>i{transform:rotate(180deg)}
+  .mobile-menu-links .mobile-nav-category-panel{display:grid;gap:4px;padding:7px 0 2px 10px}
+  .mobile-menu-links .mobile-nav-category-panel[hidden]{display:none}
+  .mobile-menu-links .mobile-nav-category-panel a{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px;padding:10px 12px;border:0;border-radius:8px;background:rgba(255,255,255,.06);font-size:12px;font-weight:700}
+  .mobile-menu-links .mobile-nav-category-panel a i{font-size:13px;font-style:normal;opacity:.65}
+  .mobile-menu-links .mobile-menu-home{grid-column:1/-1}
+  .mobile-menu-links .mobile-menu-cta{grid-column:1/-1}
+}
+@media(max-width:380px){.mobile-menu-links .mobile-nav-category-trigger{min-height:48px}.mobile-menu-links .mobile-menu-home{grid-column:1}.mobile-menu-links .mobile-menu-cta{grid-column:1}}

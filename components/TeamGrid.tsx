@@ -11,7 +11,7 @@ function rotate<T>(items: T[], by: number) {
 }
 
 export default function TeamGrid({ members }: { members: TeamMember[] }) {
-  const teamSlots = members.map((member, index) => ({ ...member, number: String(index + 1).padStart(2, "0"), degree: member.degree || "", program: member.program || "", year: member.year || "", campus: member.campus || "Campus not specified", team: member.team === "Campus Innovation Fellow" ? "Campus Innovation Fellow" : "Social Media Team", role: member.role || "Team member", name: member.name }));
+  const teamSlots = members.map((member, index) => ({ ...member, number: String(index + 1).padStart(2, "0"), degree: member.degree_program || member.degree || "", program: member.program || "", year: member.year_of_study || member.year || "", campus: member.campus || "Campus not specified", team: member.team === "Campus Innovation Fellow" ? "Campus Innovation Fellow" : "Social Media Team", role: member.role || "Team member", name: member.name }));
   const [order, setOrder] = useState(() => teamSlots.map((_, i) => i));
   const [active, setActive] = useState(0);
   const [dragStart, setDragStart] = useState<number | null>(null);

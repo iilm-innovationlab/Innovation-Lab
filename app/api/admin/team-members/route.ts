@@ -75,6 +75,8 @@ export async function POST(request: Request) {
     let role = clean(body.role, 160) || null;
     let campus = clean(body.campus, 120) || "Greater Noida";
     let team = clean(body.team, 80);
+    let yearOfStudy = clean(body.year_of_study, 40);
+    let degreeProgram = clean(body.degree_program, 160);
     let contactEmail = clean(body.contact_email, 254).toLowerCase();
     let photoUrl: string | null = null;
 
@@ -90,6 +92,8 @@ export async function POST(request: Request) {
       contactEmail = clean(application.email, 254).toLowerCase();
       campus = clean(application.campus, 120) || "Greater Noida";
       team = application.type === "social_media" ? "Social Media" : "Campus Innovation Fellow";
+      yearOfStudy = clean(application.year, 40) || yearOfStudy;
+      degreeProgram = clean(application.degree, 160) || degreeProgram;
       const roles = (application.payload && Array.isArray(application.payload.roles)) ? application.payload.roles.map((item: unknown) => clean(item, 100)).filter(Boolean) : [];
       role = application.type === "social_media" ? (roles.join(", ") || "Social Media Team Member") : "Campus Innovation Fellow";
       photoUrl = typeof application.profile_picture_url === "string" ? application.profile_picture_url : null;
@@ -105,6 +109,8 @@ export async function POST(request: Request) {
 
     if (name.length < 2) return NextResponse.json({ ok: false, error: "Please enter the member's full name." }, { status: 400 });
     if (!ALLOWED_TEAMS.has(team)) return NextResponse.json({ ok: false, error: "Please choose a valid team." }, { status: 400 });
+    if (!new Set(["First Year", "Second Year", "Third Year", "Fourth Year"]).has(yearOfStudy)) return NextResponse.json({ ok: false, error: "Please choose a valid year of study." }, { status: 400 });
+    if (!degreeProgram) return NextResponse.json({ ok: false, error: "Please enter the degree program." }, { status: 400 });
     if (contactEmail && !validEmail(contactEmail)) return NextResponse.json({ ok: false, error: "Please enter a valid contact email." }, { status: 400 });
     if (!contactEmail && applicationId) return NextResponse.json({ ok: false, error: "The application does not contain a valid email address." }, { status: 400 });
 
@@ -129,14 +135,14 @@ export async function POST(request: Request) {
         const archived = await archiveApplication(auth, application);
         if (!archived) return NextResponse.json({ ok: false, error: "This student already has a team profile, but the application could not be archived. Please retry after refreshing." }, { status: 502 });
         revalidatePath("/team"); revalidatePath("/"); revalidateTag("public-team", { expire: 0 });
-        return NextResponse.json({ ok: true, alreadyOnTeam: true, member: { id: existing.id, name: existing.name, role: existing.role, campus: existing.campus, team: existing.team, photo_url: existing.photo_url || photoUrl, email: existing.email || existing.contact_email, published: existing.published ?? true } }, { status: 200 });
+        return NextResponse.json({ ok: true, alreadyOnTeam: true, member: { id: existing.id, name: existing.name, role: existing.role, campus: existing.campus, team: existing.team, year_of_study: existing.year_of_study || null, degree_program: existing.degree_program || null, photo_url: existing.photo_url || photoUrl, email: existing.email || existing.contact_email, published: existing.published ?? true } }, { status: 200 });
       }
     }
 
     const insertResponse = await rest(auth.url, auth.serviceKey, "team_members", {
       method: "POST",
       headers: { "Content-Type": "application/json", Prefer: "return=representation" },
-      body: JSON.stringify({ name, role, campus, team, photo_url: photoUrl, published: true, auth_user_id: null, email: contactEmail || null, contact_email: contactEmail || null, created_by: auth.actor.id, created_by_name: auth.actor.full_name || auth.actor.email || "Admin" }),
+      body: JSON.stringify({ name, role, campus, team, year_of_study: yearOfStudy, degree_program: degreeProgram, photo_url: photoUrl, published: true, auth_user_id: null, email: contactEmail || null, contact_email: contactEmail || null, created_by: auth.actor.id, created_by_name: auth.actor.full_name || auth.actor.email || "Admin" }),
     });
     const rows = await insertResponse.json().catch(() => ({}));
     if (!insertResponse.ok) { console.error("Team profile insert failed", rows); return NextResponse.json({ ok: false, error: "Could not save the team profile. No Supabase Auth account was created." }, { status: 502 }); }
@@ -166,7 +172,7 @@ export async function POST(request: Request) {
     revalidatePath("/team");
     revalidatePath("/");
     revalidateTag("public-team", { expire: 0 });
-    return NextResponse.json({ ok: true, member: { id: member.id, name: member.name || name, role: member.role || role, campus: member.campus || campus, team: member.team || team, photo_url: member.photo_url || photoUrl, email: member.email || contactEmail || null, contact_email: member.contact_email || contactEmail || null, published: member.published ?? true } }, { status: 201 });
+    return NextResponse.json({ ok: true, member: { id: member.id, name: member.name || name, role: member.role || role, campus: member.campus || campus, team: member.team || team, year_of_study: member.year_of_study || yearOfStudy, degree_program: member.degree_program || degreeProgram, photo_url: member.photo_url || photoUrl, email: member.email || contactEmail || null, contact_email: member.contact_email || contactEmail || null, published: member.published ?? true } }, { status: 201 });
   } catch (error) {
     if (newlyInsertedMemberId) await deleteTeamMember(auth, newlyInsertedMemberId);
     console.error("Team profile onboarding failed", error);
@@ -182,23 +188,28 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const id = clean(body.id, 80);
-    if (!id || typeof body.published !== "boolean") {
-      return NextResponse.json({ ok: false, error: "A team member ID and publishing state are required." }, { status: 400 });
-    }
+    if (!id) return NextResponse.json({ ok: false, error: "A team member ID is required." }, { status: 400 });
+    const isProfileEdit = typeof body.name === "string";
+    if (!isProfileEdit && typeof body.published !== "boolean") return NextResponse.json({ ok: false, error: "Provide profile fields or a publishing state." }, { status: 400 });
 
-    const currentResponse = await rest(auth.url, auth.serviceKey, `team_members?id=eq.${encodeURIComponent(id)}&select=id,name,role,campus,team,published&limit=1`);
+    const currentResponse = await rest(auth.url, auth.serviceKey, `team_members?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
     if (!currentResponse.ok) return NextResponse.json({ ok: false, error: "Could not load the team member." }, { status: 502 });
     const currentRows = await currentResponse.json().catch(() => []);
     const current = Array.isArray(currentRows) ? currentRows[0] : null;
     if (!current) return NextResponse.json({ ok: false, error: "Team member not found." }, { status: 404 });
 
     const actorName = auth.actor.full_name || auth.actor.email || "Admin";
+    const changes = isProfileEdit ? {
+      name: clean(body.name, 160), role: clean(body.role, 160) || null, campus: clean(body.campus, 120), team: clean(body.team, 80),
+      year_of_study: clean(body.year_of_study, 40) || null, degree_program: clean(body.degree_program, 160) || null,
+      email: clean(body.contact_email, 254).toLowerCase() || null, photo_url: clean(body.photo_url, 2000) || current.photo_url || null,
+      updated_by: auth.actor.id, updated_by_name: actorName,
+    } : { published: body.published, updated_by: auth.actor.id, updated_by_name: actorName };
+    if (isProfileEdit && (!changes.name || !changes.campus || !ALLOWED_TEAMS.has(changes.team))) return NextResponse.json({ ok: false, error: "Name, campus, and a valid team are required." }, { status: 400 });
     const updateResponse = await rest(auth.url, auth.serviceKey, `team_members?id=eq.${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json", Prefer: "return=representation" },
-      body: JSON.stringify({ published: body.published, updated_by: auth.actor.id, updated_by_name: actorName }),
+      method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=representation" }, body: JSON.stringify(changes),
     });
-    if (!updateResponse.ok) return NextResponse.json({ ok: false, error: "Could not update team member visibility." }, { status: 502 });
+    if (!updateResponse.ok) return NextResponse.json({ ok: false, error: isProfileEdit ? "Could not update team member details." : "Could not update team member visibility." }, { status: 502 });
     const updatedRows = await updateResponse.json().catch(() => []);
     const updated = Array.isArray(updatedRows) ? updatedRows[0] : null;
     if (!updated) return NextResponse.json({ ok: false, error: "The team member visibility was not updated." }, { status: 502 });
@@ -208,7 +219,7 @@ export async function PATCH(request: Request) {
       headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
       body: JSON.stringify({ table_name: "team_members", record_id: id, action: "UPDATE", changed_by: auth.actor.id, changed_by_name: actorName, old_data: current, new_data: updated }),
     });
-    if (!auditResponse.ok) console.error("Team publishing audit insert failed", await auditResponse.text().catch(() => ""));
+    if (!auditResponse.ok) console.error("Team update audit insert failed", await auditResponse.text().catch(() => ""));
 
     revalidatePath("/team");
     revalidatePath("/");

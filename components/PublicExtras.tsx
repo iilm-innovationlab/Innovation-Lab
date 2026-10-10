@@ -48,11 +48,7 @@ export function CommunityCounts({ counts = {} }: { counts?: Record<string, numbe
 }
 
 export function NotificationPrompt() {
-  const [status, setStatus] = useState<"idle" | "enabled" | "unsupported">("idle");
-  const enable = async () => {
-    if (!("Notification" in window)) return setStatus("unsupported");
-    const permission = await Notification.requestPermission();
-    setStatus(permission === "granted" ? "enabled" : "unsupported");
-  };
-  return <div className="notification-prompt"><div><span>🔔</span><div><strong>Don’t miss Lab updates.</strong><p>Get browser notifications for new events and important announcements.</p></div></div><button onClick={enable}>{status === "enabled" ? "Notifications on ✓" : status === "unsupported" ? "Not available here" : "Enable notifications"}</button></div>;
+  // Browser notification permission requests are disabled to avoid unexpected
+  // permission prompts for visitors.
+  return null;
 }
