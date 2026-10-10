@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Invalid image upload purpose." }, { status: 400 });
     }
     const rateLimit = await enforcePublicRateLimit(request, `cloudinary-signature-${purpose}`, purpose === "application" ? 20 : 30, 60 * 60);
-    if (rateLimit.reason === "unavailable") {
+    if (!rateLimit.allowed && rateLimit.reason === "unavailable") {
       return NextResponse.json({ ok: false, error: "Upload protection is temporarily unavailable. Please try again shortly." }, { status: 503, headers: { "Cache-Control": "no-store" } });
     }
     if (!rateLimit.allowed) {

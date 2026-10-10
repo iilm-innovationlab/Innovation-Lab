@@ -82,7 +82,7 @@ export async function POST(request: Request) {
     // A small database-backed limit protects both the application table and service-role API
     // from accidental loops and basic automated spam. This is intentionally per client IP.
     const rateLimit = await enforcePublicRateLimit(request, "application-submit", 10, 60 * 60);
-    if (rateLimit.reason === "unavailable") {
+    if (!rateLimit.allowed && rateLimit.reason === "unavailable") {
       return NextResponse.json({ ok: false, error: "Application protection is temporarily unavailable. Please try again shortly." }, { status: 503 });
     }
     if (!rateLimit.allowed) {
