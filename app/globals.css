@@ -293,8 +293,8 @@
 }
 @media (max-width:680px){
   .nav-shell{width:calc(100% - 20px);height:68px}
-  .brand-lockup{width:min(63vw,205px)}
-  .menu-toggle{width:46px;height:46px;flex-basis:46px}
+  .brand-lockup{width:min(56vw,180px)}
+  .menu-toggle{width:46px;height:46px;flex-basis:46px;margin-right:8px}
   .menu-toggle b{bottom:-17px}
   .mobile-menu-grid{padding:92px 22px 24px}
   .mobile-menu-meta{padding-bottom:18px}
