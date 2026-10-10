@@ -1,0 +1,18 @@
+.env
+.env.*
+!.env.example
+.env.local
+.env.example
+node_modules/
+.next/
+out/
+.vercel/
+.env.local
+.env.*.local
+.DS_Store
+*.log
+npm-debug.log*
+
+# Local backups / exports
+backups/
+*.backup.json
