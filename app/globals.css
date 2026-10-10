@@ -650,3 +650,46 @@
 .team-admin-card .audit-line{font-size:10px!important;line-height:1.45;color:#7b8797;margin:12px 0 0;overflow-wrap:anywhere;font-weight:500}
 .team-admin-card footer{width:100%;margin-top:auto;padding-top:14px;gap:8px;flex-wrap:wrap}
 @media(max-width:520px){.team-admin-card>small.team-admin-meta,.team-admin-card .team-admin-email{font-size:12px}.team-admin-card .audit-line{font-size:10px!important}}
+
+/* Final mobile navigation correction: full-viewport overlay without shifting page content. */
+@media (max-width: 1000px) {
+  .site-header.menu-open {
+    position: fixed;
+    inset: 0 0 auto 0;
+    width: 100%;
+    max-width: 100%;
+    transform: none !important;
+  }
+  .site-header.menu-open .mobile-menu {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    transform: translate3d(100%, 0, 0) !important;
+    box-sizing: border-box;
+  }
+  .site-header.menu-open .mobile-menu.is-open {
+    transform: translate3d(0, 0, 0) !important;
+  }
+  .site-header.menu-open .mobile-menu-grid {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+  .site-header.menu-open .nav-shell {
+    width: calc(100% - 24px);
+    max-width: 1440px;
+    margin-inline: auto;
+  }
+}
