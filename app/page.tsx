@@ -89,7 +89,7 @@ async function getPublishedAnnouncements() {
 export default async function Home() {
   const [announcements, events, communityCounts, teamMembers, shorts, starIdeators] = await Promise.all([getPublishedAnnouncements(), getPublishedEvents(), getCommunityCounts(), getPublishedTeam(), getPublishedShorts(), getPublishedStarIdeators()]);
   return (
-    <main>
+    <main className="homepage-main">
       <Hero />
       {announcements[0] && <div className="announcement-banner"><div className="container announcement-banner-inner"><span>NEW / {announcements[0].title}</span><p>{announcements[0].body}</p><a href="#announcements">Read update ↗</a></div></div>}
       <div className="container"><PushNotifications /></div>

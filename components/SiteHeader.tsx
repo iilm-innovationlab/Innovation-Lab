@@ -67,7 +67,7 @@ export default function SiteHeader() {
         {groups.map(group => <div className="nav-dropdown" key={group.label}><button type="button" className="nav-group-trigger" aria-haspopup="true">{group.label}<span>⌄</span></button><div className="nav-dropdown-panel">{group.items.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}</div></div>)}
       </nav>
       <Link href="/join" className="nav-cta" data-cursor onClick={() => setOpen(false)}>Join the Lab <span>↗</span></Link>
-      <button ref={toggleRef} type="button" className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => { setOpen(v => !v); setMobileExpandedGroup(null); }} aria-label={open ? "Close navigation menu" : "Open navigation menu"} aria-expanded={open} aria-controls="mobile-navigation"><span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" /><b aria-hidden="true">{open ? "CLOSE" : "MENU"}</b></button>
+      <button ref={toggleRef} type="button" className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => { setOpen(v => !v); setMobileExpandedGroup(null); }} aria-label={open ? "Close navigation menu" : "Open navigation menu"} aria-expanded={open} aria-controls="mobile-navigation"><span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" /></button>
     </div>
   </header>{mounted && createPortal(menu, document.body)}</>;
 }

@@ -750,3 +750,35 @@
   .site-header.menu-open .menu-toggle { position: relative; z-index: 10002 !important; }
   .mobile-menu { z-index: 10000 !important; }
 }
+
+
+/* Homepage-only mobile overflow correction. Keep decorative hero artwork inside the viewport. */
+@media (max-width: 680px) {
+  .homepage-main {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  .homepage-main .hero-wrap,
+  .homepage-main .hero-copy-award,
+  .homepage-main .hero-stage {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .homepage-main .hero-image-inset {
+    right: 2%;
+    transform: rotate(-3deg);
+  }
+
+  .homepage-main .hero-image-float {
+    left: 0;
+    transform: rotate(-5deg);
+  }
+
+  .homepage-main .spark-2 {
+    right: 3%;
+  }
+}
