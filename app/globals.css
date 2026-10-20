@@ -229,6 +229,7 @@
  .team-experience-head{align-items:flex-start;flex-direction:row;gap:12px}
  .team-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:5px}
  .team-grid-card:nth-child(n+5){display:none}
+ .team-page-grid .team-grid-card:nth-child(n+5){display:block}
  .team-grid-card{border-radius:12px}
  .team-grid-card .team-card-visual{height:clamp(130px,42vw,205px)}
  .team-grid-card .team-card-grid{background-size:20px 20px}

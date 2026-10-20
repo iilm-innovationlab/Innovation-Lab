@@ -18,7 +18,7 @@ type TeamMember = {
   year_of_study?: string | null;
 };
 
-export default function TeamGrid({ members }: { members: TeamMember[] }) {
+export default function TeamGrid({ members, className = "" }: { members: TeamMember[]; className?: string }) {
   const teamSlots = members.map((member, index) => ({
     ...member,
     number: String(index + 1).padStart(2, "0"),
@@ -43,7 +43,7 @@ export default function TeamGrid({ members }: { members: TeamMember[] }) {
         </div>
       </div>
 
-      <div className="team-grid">
+      <div className={`team-grid ${className}`.trim()}>
         {teamSlots.map((member) => (
           <article key={member.id} className="team-grid-card">
             <div className="team-card-visual">

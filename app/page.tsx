@@ -11,7 +11,7 @@ import ReelSlider from "@/components/ReelSlider";
 import SectionLabel from "@/components/SectionLabel";
 import GoogleFormButton from "@/components/GoogleFormButton";
 import { bnvIndiaPortfolio, forms } from "@/lib/content";
-import { FAQSection, ResourcesSection, CommunityCounts } from "@/components/PublicExtras";
+import { FAQSection, CommunityCounts } from "@/components/PublicExtras";
 import PushNotifications from "@/components/PushNotifications";
 import EventCalendar from "@/components/EventCalendar";
 
@@ -203,14 +203,11 @@ export default async function Home() {
         <div className="community-block community-founder" id="founders"><div className="community-num">03</div><div className="community-content"><SectionLabel>Founder’s Club</SectionLabel><h2>Founder<br /><em>mode.</em></h2><p>Founder’s Club is the filtered, advanced community for students who have moved beyond validation into serious execution — prototype, MVP and venture building.</p><div className="chip-row"><span>Advanced mentorship</span><span>Angel investor connections</span><span>Incubation pathway</span><span>Japan opportunities</span><span>Hackathons</span><span>Venture building</span></div><span className="coming-soon">COMING SOON 🚀</span></div><div className="founder-art"><span>03</span><strong>BUILD<br />SERIOUSLY.</strong><i>launch / learn / repeat</i></div></div>
       </section>
 
-      <section className="portfolio section" id="portfolio"><div className="container"><ScrollReveal><SectionLabel>BNV India network of ventures</SectionLabel><div className="section-heading-row"><div><h2 className="mega">Ideas that made it <i>out.</i></h2><p>BNV’s official India portfolio includes ventures across healthcare, AI/digital, climate, agriculture/food and other deep-tech categories.</p></div><a className="text-link" href="https://beyondnextventures.com/india/" target="_blank" rel="noreferrer">Explore BNV India ↗</a></div></ScrollReveal><div className="portfolio-grid">{bnvIndiaPortfolio.map((p, i) => <a key={p.name} className="portfolio-card" href="https://beyondnextventures.com/portfolio/" target="_blank" rel="noreferrer"><span>{String(i + 1).padStart(2, "0")}</span><h3>{p.name}</h3><p>{p.note}</p><b>BNV portfolio ↗</b></a>)}</div></div></section>
 
-      <section className="problems section" id="problems"><div className="container"><ScrollReveal><SectionLabel>Problems we explore</SectionLabel><h2 className="mega">Start with the <i>problem.</i></h2><p className="lead-copy">Not every problem needs to become a startup. The first move is to notice it, frame it and talk to people.</p></ScrollReveal><div className="problem-grid"><div><span>01</span><h3>What keeps happening?</h3><p>Bring a recurring student, campus, consumer or real-world frustration.</p></div><div><span>02</span><h3>Who feels it?</h3><p>Map the people who experience the problem and what they do today.</p></div><div><span>03</span><h3>What could change?</h3><p>Turn observations into hypotheses worth testing with real people.</p></div></div></div></section>
 
       <section className="sessions section"><div className="container"><ScrollReveal><SectionLabel>Previous sessions</SectionLabel><div className="section-heading-row"><div><h2 className="mega">Learn. Meet. <i>Repeat.</i></h2><p>Session archives, photographs, speakers and takeaways will be published here from the admin panel.</p></div><Link href="/events" className="text-link">Open sessions archive ↗</Link></div></ScrollReveal><div className="archive-placeholder"><div className="archive-number">00</div><div><h3>Session archive is being curated.</h3><p>No session names, dates or speaker information are invented on this page.</p></div><span>ARCHIVE</span></div></div></section>
 
       <CommunityCounts counts={communityCounts} />
-      <ResourcesSection />
       <FAQSection />
 
       <section className="events section" id="events"><div className="container"><div className="section-heading-row"><div><SectionLabel>What’s happening?</SectionLabel><h2 className="mega">Show up.<br /><i>Make something.</i></h2></div><Link href="/events" className="text-link">View full calendar ↗</Link></div>{events.length ? <EventCalendar events={events} /> : <div className="empty-editorial"><div className="empty-stamp">SOON</div><div><h3>The calendar is ready for your first event.</h3><p>Published events created in Admin Studio will appear here automatically.</p></div><span>👀</span></div>}</div></section>

@@ -6,9 +6,9 @@ import { createPortal } from "react-dom";
 
 const groups = [
   { label: "About", items: [["About the Lab", "/#lab"], ["BNV", "/#bnv"]] },
-  { label: "Explore", items: [["Journey", "/#journey"], ["Communities", "/#explorer"], ["Star Ideators", "/star-ideators"], ["Opportunities", "/#join-team"]] },
-  { label: "Discover", items: [["Women Who Build", "/women-in-entrepreneurship"], ["Events", "/#events"], ["Event Gallery", "/event-gallery"], ["Portfolio", "/#portfolio"], ["Team", "/#team"]] },
-  { label: "Resources", items: [["Resources", "/#resources"], ["FAQs", "/#faq"], ["YouTube Shorts", "/#youtube-shorts"]] },
+  { label: "Explore", items: [["Explore Hub", "/explore"], ["Journey", "/#journey"], ["Communities", "/#explorer"], ["Star Ideators", "/star-ideators"], ["Opportunities", "/#join-team"]] },
+  { label: "Discover", items: [["Women Who Build", "/women-in-entrepreneurship"], ["Events", "/#events"], ["Event Gallery", "/event-gallery"], ["Portfolio", "/explore#portfolio"], ["Team", "/#team"]] },
+  { label: "Resources", items: [["Resources", "/explore#resources"], ["FAQs", "/#faq"], ["YouTube Shorts", "/#youtube-shorts"]] },
 ] as const;
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
