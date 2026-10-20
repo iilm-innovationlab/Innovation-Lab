@@ -6,7 +6,7 @@ const faq = [
   ["What is the Innovation Lab?", "IILM × BNV Innovation Lab is a student-focused ecosystem for discovering problems, developing ideas, validating them, building prototypes and moving toward venture building."],
   ["Who can join?", "Students can enter through Explorer, Ideator, or the Founder’s Club journey depending on where they are in their idea and execution journey."],
   ["Do I need a startup idea?", "No. Explorer is specifically for curious students who do not have an idea yet."],
-  ["Is Founder’s Club open now?", "Founder’s Club is marked Coming Soon. The Lab will publish the next selection and launch details through the announcement system."],
+  ["Is Founder’s Club open now?", "Founder’s Club is marked Coming Soon. The Lab will share the next selection and launch details through its official channels."],
   ["Are the sessions free?", "The Lab is designed as a student ecosystem. Check each published event for its registration details and any event-specific requirements."],
 ];
 
@@ -32,10 +32,6 @@ export function FAQSection() {
 
 export function ResourcesSection() {
   return <section className="resources section" id="resources"><div className="container"><div className="section-head"><div><span className="eyebrow">LAB KNOWLEDGE</span><h2 className="mega">Build your <i>toolkit.</i></h2></div><span className="section-note">FREE / SELF-PACED</span></div><div className="resource-grid">{resources.map(([title, desc], i) => <article key={title}><span>0{i + 1}</span><h3>{title}</h3><p>{desc}</p><a href="/programs">Explore <span>↗</span></a></article>)}</div></div></section>;
-}
-
-export function TestimonialsSection() {
-  return <section className="testimonials section"><div className="container"><div className="section-head"><div><span className="eyebrow">STUDENT VOICE</span><h2 className="mega">Stories from <i>builders.</i></h2></div></div><div className="empty-editorial"><div className="empty-stamp">VOICE</div><div><h3>Verified student stories will appear here.</h3><p>We will publish testimonials only after students have shared and approved their stories.</p></div></div></div></section>;
 }
 
 export function CommunityCounts({ counts = {} }: { counts?: Record<string, number> }) {

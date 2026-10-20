@@ -3,7 +3,7 @@
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-type UploadPurpose = "application" | "team" | "star-ideators";
+type UploadPurpose = "application" | "team" | "star-ideators" | "event-gallery";
 
 async function optimizeProfileImage(file: File): Promise<File> {
   // Resize/encode locally so a multi-megabyte phone photo does not become the stored original.
@@ -35,7 +35,7 @@ async function optimizeProfileImage(file: File): Promise<File> {
 
 export async function uploadImageDirectToCloudinary(file: File, purpose: UploadPurpose, accessToken?: string): Promise<string> {
   if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error("Choose a JPG, PNG, or WebP image.");
-  if (file.size <= 0 || file.size > MAX_IMAGE_BYTES) throw new Error("Profile picture must be between 1 byte and 5 MB.");
+  if (file.size <= 0 || file.size > MAX_IMAGE_BYTES) throw new Error("Image must be between 1 byte and 5 MB.");
   const uploadFile = await optimizeProfileImage(file);
 
   // Ask Vercel only for a signature. The file itself goes straight from this browser to Cloudinary.
@@ -69,7 +69,7 @@ export async function uploadImageDirectToCloudinary(file: File, purpose: UploadP
     throw new Error("Cloudinary could not upload this picture. Please try again or submit without a picture.");
   }
 
-  const expectedFolder = purpose === "application" ? "iilm-bnv/applications" : purpose === "star-ideators" ? "iilm-bnv/star-ideators" : "iilm-bnv/team";
+  const expectedFolder = purpose === "application" ? "iilm-bnv/applications" : purpose === "star-ideators" ? "iilm-bnv/star-ideators" : purpose === "event-gallery" ? "iilm-bnv/event-gallery" : "iilm-bnv/team";
   let valid = false;
   try {
     const url = new URL(result.secure_url);

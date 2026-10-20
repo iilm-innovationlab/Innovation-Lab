@@ -123,7 +123,7 @@ export default function WomenBuild() {
             <h3>Plot twist: the next story could be yours.</h3>
             <p>You do not have to arrive as a “founder”. Start as a curious student. We will help you find the next step.</p>
           </div>
-          <Link href="#journey" className="hero-btn hero-btn-red" data-cursor>Start curious ↗</Link>
+          <Link href="/#journey" className="hero-btn hero-btn-red" data-cursor>Start curious ↗</Link>
         </div>
       </div>
     </section>

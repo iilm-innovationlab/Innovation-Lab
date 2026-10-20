@@ -12,13 +12,8 @@ export const metadata: Metadata = pageMetadata({
   keywords: ["IILM Campus Innovation Fellow", "IILM CIF", "IILM BNV Innovation Lab team"]
 });
 
-export default function CampusInnovationFellowPage(){
-  return <main className="page-shell"><div className="container">
-    <BreadcrumbJsonLd items={[{name:"Home",path:"/"},{name:"Join the Lab",path:"/join"},{name:"Campus Innovation Fellow",path:"/join/campus-innovation-fellow"}]} />
-    <SectionLabel>Join the team / Campus Innovation Fellow</SectionLabel>
-    <h1 className="mega">Build the<br/><i>campus.</i></h1>
-    <p className="lead-copy">Apply to become a Campus Innovation Fellow and tell us how you would help students discover ideas, join activities, and build across campus.</p>
-    <GeneralApplication type="campus_innovation_fellow" />
-    <Link href="/join" className="text-link">← Back to Join</Link>
-  </div></main>
+import { redirect } from "next/navigation";
+
+export default function ApplicationRedirect(){
+  redirect("https://docs.google.com/forms/d/e/1FAIpQLSewTWJAor6stfQqEEeszr2kP-yUjNg2T8yJmpfpAGmE3YECJg/viewform");
 }

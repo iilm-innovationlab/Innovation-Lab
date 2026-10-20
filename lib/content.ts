@@ -1,10 +1,9 @@
 export const forms = {
-  explorer: process.env.NEXT_PUBLIC_EXPLORER_FORM_URL || "",
-  ideator: process.env.NEXT_PUBLIC_IDEATOR_FORM_URL || "",
-  campus: process.env.NEXT_PUBLIC_CAMPUS_INNOVATION_FORM_URL || "",
-  social: process.env.NEXT_PUBLIC_SOCIAL_MEDIA_FORM_URL || "",
+  explorer: process.env.NEXT_PUBLIC_EXPLORER_FORM_URL || "https://docs.google.com/forms/d/e/1FAIpQLSeXGLOz90reucU1Zkjzbhvhs9aNvne9ViELQ1es_4LGB0rdQQ/viewform",
+  ideator: process.env.NEXT_PUBLIC_IDEATOR_FORM_URL || "https://docs.google.com/forms/d/e/1FAIpQLSd5_D1K4ZPvJqQ9xOqQW6xmxgyMq6RustO8rIBSQ7j3bcIVWA/viewform",
+  campus: process.env.NEXT_PUBLIC_CAMPUS_INNOVATION_FORM_URL || "https://docs.google.com/forms/d/e/1FAIpQLSewTWJAor6stfQqEEeszr2kP-yUjNg2T8yJmpfpAGmE3YECJg/viewform",
+  social: process.env.NEXT_PUBLIC_SOCIAL_MEDIA_FORM_URL || "https://docs.google.com/forms/d/e/1FAIpQLSdZWcXIpYW5xcnQhxJhSAvQ1myxeGmLpH-l1NIHLI4BxuU-wQ/viewform",
 };
-
 export const bnvIndiaPortfolio = [
   { name: "Phasorz Technologies", note: "AI-enabled remote-care / telemedicine platform" },
   { name: "Biomoneta", note: "Air-quality and pathogen-control technology" },

@@ -12,13 +12,8 @@ export const metadata: Metadata = pageMetadata({
   keywords: ["IILM Ideator", "IILM Innovation Lab Ideator", "IILM BNV startup ideas"]
 });
 
-export default function IdeatorPage(){
-  return <main className="page-shell"><div className="container">
-    <BreadcrumbJsonLd items={[{name:"Home",path:"/"},{name:"Join the Lab",path:"/join"},{name:"Ideator",path:"/join/ideator"}]} />
-    <SectionLabel>Join a community / Ideator</SectionLabel>
-    <h1 className="mega">You have an<br/><i>idea.</i></h1>
-    <p className="lead-copy">Apply to the Ideator community and tell us about the problem you want to solve, the people affected, and what you have learned so far.</p>
-    <GeneralApplication type="ideator" />
-    <Link href="/join" className="text-link">← Back to Join</Link>
-  </div></main>
+import { redirect } from "next/navigation";
+
+export default function ApplicationRedirect(){
+  redirect("https://docs.google.com/forms/d/e/1FAIpQLSd5_D1K4ZPvJqQ9xOqQW6xmxgyMq6RustO8rIBSQ7j3bcIVWA/viewform");
 }

@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { restInsert, restSelect, restUpsert, refreshAuthSession, supabaseConfigured } from "@/lib/supabase-rest";
 
-const RESTORABLE_TABLES = ["applications", "events", "team_members", "communities", "youtube_shorts", "announcements"] as const;
+const RESTORABLE_TABLES = ["applications", "events", "event_gallery", "team_members", "communities", "youtube_shorts", "announcements"] as const;
 const TABLES = [...RESTORABLE_TABLES, "audit_logs"] as const;
 type BackupTable = typeof TABLES[number];
 type BackupPayload = { version: 1; exported_at: string; source: string; tables: Record<string, unknown[]> };
@@ -11,6 +11,7 @@ type BackupPayload = { version: 1; exported_at: string; source: string; tables: 
 const LABELS: Record<BackupTable, string> = {
   applications: "Applications",
   events: "Events",
+  event_gallery: "Event Gallery",
   team_members: "Team Members",
   communities: "Communities",
   youtube_shorts: "YouTube Shorts",

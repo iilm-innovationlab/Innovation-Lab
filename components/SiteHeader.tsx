@@ -6,8 +6,8 @@ import { createPortal } from "react-dom";
 
 const groups = [
   { label: "About", items: [["About the Lab", "/#lab"], ["BNV", "/#bnv"]] },
-  { label: "Explore", items: [["Journey", "/#journey"], ["Communities", "/#explorer"], ["Star Ideators", "/#star-ideators"], ["Opportunities", "/#join-team"]] },
-  { label: "Discover", items: [["Announcements", "/#announcements"], ["Events", "/#events"], ["Portfolio", "/#portfolio"], ["Team", "/#team"]] },
+  { label: "Explore", items: [["Journey", "/#journey"], ["Communities", "/#explorer"], ["Star Ideators", "/star-ideators"], ["Opportunities", "/#join-team"]] },
+  { label: "Discover", items: [["Women Who Build", "/women-in-entrepreneurship"], ["Events", "/#events"], ["Event Gallery", "/event-gallery"], ["Portfolio", "/#portfolio"], ["Team", "/#team"]] },
   { label: "Resources", items: [["Resources", "/#resources"], ["FAQs", "/#faq"], ["YouTube Shorts", "/#youtube-shorts"]] },
 ] as const;
 export default function SiteHeader() {
@@ -52,7 +52,7 @@ export default function SiteHeader() {
               {group.items.map(([label, href]) => <Link key={label} href={href} tabIndex={open && mobileExpandedGroup === group.label ? 0 : -1} onClick={closeMenu}>{label}<i aria-hidden="true">↗</i></Link>)}
             </div>
           </div>)}
-          <Link href="/join" className="mobile-menu-cta" tabIndex={open ? 0 : -1} onClick={closeMenu}><span>06</span><strong>Join the Lab</strong><i>→</i></Link>
+          <Link href="https://linktr.ee/IILMxBNVInnovationLab" className="mobile-menu-cta" tabIndex={open ? 0 : -1} onClick={closeMenu}><span>06</span><strong>Join the Lab</strong><i>→</i></Link>
         </nav><div className="mobile-menu-footer"><span>IILM × BNV INNOVATION LAB</span><span>EXPLORE · IDEATE · BUILD</span></div>
       </div>
     </div>
@@ -66,7 +66,7 @@ export default function SiteHeader() {
         <Link className="nav-home-link" href="/">Home</Link>
         {groups.map(group => <div className="nav-dropdown" key={group.label}><button type="button" className="nav-group-trigger" aria-haspopup="true">{group.label}<span>⌄</span></button><div className="nav-dropdown-panel">{group.items.map(([label, href]) => <Link key={label} href={href}>{label}</Link>)}</div></div>)}
       </nav>
-      <Link href="/join" className="nav-cta" data-cursor onClick={() => setOpen(false)}>Join the Lab <span>↗</span></Link>
+      <Link href="https://linktr.ee/IILMxBNVInnovationLab" className="nav-cta" data-cursor onClick={() => setOpen(false)}>Join the Lab <span>↗</span></Link>
       <button ref={toggleRef} type="button" className={`menu-toggle ${open ? "is-open" : ""}`} onClick={() => { setOpen(v => !v); setMobileExpandedGroup(null); }} aria-label={open ? "Close navigation menu" : "Open navigation menu"} aria-expanded={open} aria-controls="mobile-navigation"><span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" /></button>
     </div>
   </header>{mounted && createPortal(menu, document.body)}</>;

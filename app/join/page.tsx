@@ -3,6 +3,7 @@ import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import SectionLabel from "@/components/SectionLabel";
+import { forms } from "@/lib/content";
 
 export const metadata: Metadata = pageMetadata({
   title: "Join IILM Innovation Lab | Communities & Team",
@@ -25,12 +26,12 @@ export default function JoinPage(){
         <article>
           <span>−2</span><small>EXPLORER</small><h2>I’m curious.</h2>
           <p>No idea yet. Explore entrepreneurship, attend sessions, meet people and discover problems worth solving.</p>
-          <Link className="hero-btn hero-btn-red" href="/join/explorer">Open Explorer form ↗</Link>
+          <a className="hero-btn hero-btn-red" href={forms.explorer} target="_blank" rel="noreferrer noopener">Open Explorer form ↗</a>
         </article>
         <article>
           <span>−1 → 0</span><small>IDEATOR</small><h2>I have an idea.</h2>
           <p>You have an idea and want guidance around research, validation, customers, prototyping and execution.</p>
-          <Link className="hero-btn hero-btn-red" href="/join/ideator">Open Ideator form ↗</Link>
+          <a className="hero-btn hero-btn-red" href={forms.ideator} target="_blank" rel="noreferrer noopener">Open Ideator form ↗</a>
         </article>
         <article className="muted-choice">
           <span>+1</span><small>FOUNDER’S CLUB</small><h2>Founder mode.</h2>
@@ -48,12 +49,12 @@ export default function JoinPage(){
         <div className="opportunity">
           <span>01</span><h3>Campus Innovation Fellow</h3>
           <p>Help create the innovation culture across campus, support initiatives and build with students.</p>
-          <Link className="hero-btn hero-btn-red" href="/join/campus-innovation-fellow">Open CIF form ↗</Link>
+          <a className="hero-btn hero-btn-red" href={forms.campus} target="_blank" rel="noreferrer noopener">Open CIF form ↗</a>
         </div>
         <div className="opportunity dark">
           <span>02</span><h3>Social Media Team</h3>
           <p>Content, reels, editing, memes, storytelling, design and digital marketing for the Innovation Lab.</p>
-          <Link className="hero-btn hero-btn-red" href="/join/social-media">Open Social Media form ↗</Link>
+          <a className="hero-btn hero-btn-red" href={forms.social} target="_blank" rel="noreferrer noopener">Open Social Media form ↗</a>
         </div>
       </div>
     </section>

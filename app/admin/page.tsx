@@ -10,7 +10,7 @@ import BackupSettings from "@/components/BackupSettings";
 import { optimizedCloudinaryImageUrl } from "@/lib/cloudinary-url";
 
 type Status = "Published" | "Draft" | "New" | "Review" | "Active";
-type ModuleKey = "overview" | "applications" | "events" | "team" | "communities" | "social" | "announcements" | "star-ideators" | "settings" | "audit";
+type ModuleKey = "overview" | "applications" | "events" | "event-gallery" | "team" | "communities" | "social" | "announcements" | "star-ideators" | "settings" | "audit";
 
 type Application = { id: string; name: string; type: string; email: string; stage: string; status: Status; date: string; phone?: string; campus?: string; degree?: string; year?: string; idea?: string; problem?: string; targetUsers?: string; prototypeUrl?: string; message?: string; reviewNotes?: string; payload?: Record<string, unknown>; createdAt?: string; profilePictureUrl?: string; archivedAt?: string };
 type EventItem = { id: string; title: string; date: string; community: string; status: Status; updatedBy?: string; startsAt?: string; description?: string; registrationUrl?: string; createdAt?: string };
@@ -21,6 +21,7 @@ const nav: { key: ModuleKey; label: string; icon: string; badge?: string }[] = [
   { key: "applications", label: "Applications", icon: "✦" },
   { key: "star-ideators", label: "Star Ideators", icon: "★" },
   { key: "events", label: "Events", icon: "◷" },
+  { key: "event-gallery", label: "Event Gallery", icon: "▧" },
   { key: "team", label: "Team", icon: "◌" },
   { key: "communities", label: "Communities", icon: "◎" },
   { key: "social", label: "Social", icon: "▶" },
@@ -209,6 +210,7 @@ function AdminStudio({ identity }: { identity: AdminIdentity | null }) {
           {active === "star-ideators" && <StarIdeators onNotify={notify} />}
           {active === "applications" && <Applications data={filteredApps} onNotify={notify} onSaved={(updated) => setApplications(list => list.map(a => a.id === updated.id ? { ...a, ...updated } : a))} onTeamAdded={(member) => setTeam(list => [member, ...list.filter(existing => existing.id !== member.id)])} />}
           {active === "events" && <Events data={filteredEvents} onCycle={cycleEvent} onNotify={notify} onAdd={(event) => setEvents(list => [event, ...list])} />}
+          {active === "event-gallery" && <EventGalleryAdmin onNotify={notify} />}
           {active === "team" && <Team data={team} onCycle={cycleTeam} onNotify={notify} role="admin" onAdd={(member) => setTeam(list => [member, ...list.filter(existing => existing.id !== member.id)])} onDelete={(id) => setTeam(list => list.filter(member => member.id !== id))} />}
           {active === "communities" && <Communities counts={communityCounts} onCountsChange={setCommunityCounts} onNotify={notify} />}
           {active === "social" && <Social onNotify={notify} initialShorts={loadedShorts} />}
@@ -219,6 +221,72 @@ function AdminStudio({ identity }: { identity: AdminIdentity | null }) {
       {toast && <div className="admin-toast">✓ {toast}</div>}
     </div>
   );
+}
+
+type GalleryPhoto = { id: string; title: string; image_url: string; alt_text: string | null; event_date: string | null; published: boolean; display_order: number };
+
+function EventGalleryAdmin({ onNotify }: { onNotify: (message: string) => void }) {
+  const [items, setItems] = useState<GalleryPhoto[]>([]);
+  const [title, setTitle] = useState("");
+  const [altText, setAltText] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [published, setPublished] = useState(true);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const load = async () => {
+    try {
+      const session = readSession();
+      if (!session?.access_token) throw new Error("Please sign in again.");
+      const rows = await restSelect("event_gallery", session.access_token, "select=id,title,image_url,alt_text,event_date,published,display_order&order=display_order.asc,created_at.desc&limit=300");
+      if (Array.isArray(rows)) setItems(rows as GalleryPhoto[]);
+    } catch (error) { onNotify(error instanceof Error ? error.message : "Could not load gallery photos. Apply the event gallery migration first."); }
+    finally { setLoading(false); }
+  };
+  useEffect(() => { void load(); }, []);
+
+  const save = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!photoFile) { onNotify("Choose an event photo first."); return; }
+    setSaving(true);
+    try {
+      const session = readSession();
+      if (!session?.access_token) throw new Error("Please sign in again.");
+      const imageUrl = await uploadImageDirectToCloudinary(photoFile, "event-gallery", session.access_token);
+      const result = await restInsert("event_gallery", session.access_token, { title: title.trim(), image_url: imageUrl, alt_text: altText.trim() || title.trim(), event_date: eventDate || null, published, display_order: items.length });
+      if (Array.isArray(result) && result[0]) setItems(current => [result[0] as GalleryPhoto, ...current]); else await load();
+      setTitle(""); setAltText(""); setEventDate(""); setPublished(true); setPhotoFile(null); setShowForm(false); onNotify("Event photo added to gallery.");
+    } catch (error) { onNotify(error instanceof Error ? error.message : "Could not save the event photo."); }
+    finally { setSaving(false); }
+  };
+
+  const togglePublish = async (item: GalleryPhoto) => {
+    try {
+      const session = readSession(); const base = process.env.NEXT_PUBLIC_SUPABASE_URL; const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (!session?.access_token || !base || !anon) throw new Error("Please sign in again.");
+      const response = await fetch(`${base}/rest/v1/event_gallery?id=eq.${encodeURIComponent(item.id)}`, { method: "PATCH", headers: { apikey: anon, Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ published: !item.published }) });
+      if (!response.ok) throw new Error("Could not update photo visibility.");
+      setItems(current => current.map(photo => photo.id === item.id ? { ...photo, published: !photo.published } : photo)); onNotify(item.published ? "Photo unpublished." : "Photo published.");
+    } catch (error) { onNotify(error instanceof Error ? error.message : "Could not update photo."); }
+  };
+  const remove = async (item: GalleryPhoto) => {
+    if (!window.confirm(`Delete the gallery entry “${item.title}”? The Cloudinary file will remain in your media library.`)) return;
+    try {
+      const session = readSession(); const base = process.env.NEXT_PUBLIC_SUPABASE_URL; const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (!session?.access_token || !base || !anon) throw new Error("Please sign in again.");
+      const response = await fetch(`${base}/rest/v1/event_gallery?id=eq.${encodeURIComponent(item.id)}`, { method: "DELETE", headers: { apikey: anon, Authorization: `Bearer ${session.access_token}` } });
+      if (!response.ok) throw new Error("Could not delete gallery entry.");
+      setItems(current => current.filter(photo => photo.id !== item.id)); onNotify("Gallery entry deleted.");
+    } catch (error) { onNotify(error instanceof Error ? error.message : "Could not delete photo."); }
+  };
+
+  return <>
+    <section className="admin-card"><div className="admin-card-head"><div><span>EVENT PHOTO LIBRARY</span><h3>Event Gallery</h3><p>Add photos from workshops, sessions, campus events and founder conversations. Only published photos appear publicly.</p></div><button className="admin-primary" onClick={() => setShowForm(value => !value)}>{showForm ? "Close" : "+ Add photos"}</button></div></section>
+    {showForm && <section className="admin-card composer-card"><div className="admin-card-head"><div><span>NEW GALLERY PHOTO</span><h3>Add an event photo.</h3></div></div><form onSubmit={save}><div className="composer-grid two-col"><label className="composer-field"><span>Photo title <em>Required</em></span><input value={title} onChange={e => setTitle(e.target.value)} required maxLength={140} placeholder="e.g. Innovation workshop" /></label><label className="composer-field"><span>Event date <small>Optional</small></span><input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} /></label><label className="composer-field field-full"><span>Alt text <small>Optional, for accessibility</small></span><input value={altText} onChange={e => setAltText(e.target.value)} maxLength={240} placeholder="Describe what is shown in the photo" /></label><label className="composer-field field-full"><span>Photo file <em>Required · JPG, PNG or WebP · max 5 MB</em></span><input type="file" accept="image/jpeg,image/png,image/webp" required onChange={e => { const file = e.target.files?.[0] || null; if (file && file.size > 5 * 1024 * 1024) { onNotify("Photo must be 5 MB or smaller."); e.target.value = ""; return; } setPhotoFile(file); }} /></label><label className="composer-field field-full" style={{ display: "flex", alignItems: "center", gap: 10 }}><input type="checkbox" checked={published} onChange={e => setPublished(e.target.checked)} style={{ width: 18, height: 18 }} /> Publish this photo on the public Event Gallery</label></div><div className="composer-actions"><button type="button" className="admin-secondary" onClick={() => setShowForm(false)}>Cancel</button><button type="submit" className="admin-primary" disabled={saving}>{saving ? "Uploading…" : "Save photo ↗"}</button></div></form></section>}
+    <section className="admin-card"><div className="admin-card-head"><div><span>GALLERY DIRECTORY</span><h3>{items.length} {items.length === 1 ? "photo" : "photos"}</h3></div></div>{loading ? <p>Loading gallery photos…</p> : items.length ? <div className="team-admin-grid">{items.map(item => <article className="team-admin-card" key={item.id}><div className="team-avatar-admin" style={{ width: "100%", height: 180, borderRadius: 10, overflow: "hidden" }}><img src={optimizedCloudinaryImageUrl(item.image_url, 640)} alt={item.alt_text || item.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div><h3>{item.title}</h3><p>{item.event_date || "Date not specified"}</p><small>{item.alt_text || "No alt text"}</small><footer><Badge status={item.published ? "Published" : "Draft"}/><button onClick={() => void togglePublish(item)}>{item.published ? "Unpublish" : "Publish"}</button><button className="admin-danger" onClick={() => void remove(item)}>Delete</button></footer></article>)}</div> : <p className="admin-empty">No event photos yet. Add the first photo above. If this is the first setup, apply the event-gallery SQL migration in Supabase first.</p>}</section>
+  </>;
 }
 
 type StarIdeator = { id: string; name: string; role: string; bio: string; photo_url: string; linkedin_url: string; published: boolean; display_order: number };

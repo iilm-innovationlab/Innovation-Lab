@@ -11,10 +11,8 @@ export const metadata: Metadata = pageMetadata({
   keywords: ["IILM Social Media Team", "IILM BNV Social Media", "IILM student content creator", "IILM social media internship", "IILM Innovation Lab team"]
 });
 
-export default function SocialMediaPage(){
-  return <main className="page-shell social-page"><div className="container">
-    <BreadcrumbJsonLd items={[{name:"Home",path:"/"},{name:"Join the Lab",path:"/join"},{name:"Social Media Team",path:"/join/social-media"}]} />
-    <SectionLabel>Join our team / Social Media</SectionLabel>
-    <SocialMediaApplication />
-  </div></main>
+import { redirect } from "next/navigation";
+
+export default function ApplicationRedirect(){
+  redirect("https://docs.google.com/forms/d/e/1FAIpQLSdZWcXIpYW5xcnQhxJhSAvQ1myxeGmLpH-l1NIHLI4BxuU-wQ/viewform");
 }

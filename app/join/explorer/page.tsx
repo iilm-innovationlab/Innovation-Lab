@@ -10,6 +10,8 @@ export const metadata: Metadata = pageMetadata({
   keywords: ["IILM Explorer", "IILM Innovation Lab application", "IILM entrepreneurship", "IILM startup community", "IILM BNV Explorer"]
 });
 
-export default function ExplorerPage(){
-  return <main className="page-shell explorer-page"><div className="container"><SectionLabel>Explorer / IILM × BNV Innovation Lab</SectionLabel><h1 className="mega">You don’t need<br/><i>an idea.</i></h1><p className="lead-copy">You just need curiosity. Explorer is for IILM students who want to understand entrepreneurship, discover opportunities and learn how startups are built.</p><div className="explorer-promise"><span>CURIOUS ≠ BEHIND</span><p>Once you submit, the confirmation screen gives you the WhatsApp Community link. That’s where sessions, workshops, masterclasses, competitions and other Innovation Lab opportunities show up.</p></div><ExplorerApplication/></div></main>
+import { redirect } from "next/navigation";
+
+export default function ApplicationRedirect(){
+  redirect("https://docs.google.com/forms/d/e/1FAIpQLSeXGLOz90reucU1Zkjzbhvhs9aNvne9ViELQ1es_4LGB0rdQQ/viewform");
 }

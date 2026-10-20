@@ -6,6 +6,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: absoluteUrl("/"), lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: absoluteUrl("/about"), lastModified: now, changeFrequency: "monthly", priority: 0.95 },
+    { url: absoluteUrl("/women-in-entrepreneurship"), lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: absoluteUrl("/star-ideators"), lastModified: now, changeFrequency: "weekly", priority: 0.75 },
+    { url: absoluteUrl("/event-gallery"), lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: absoluteUrl("/programs"), lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: absoluteUrl("/ecosystem"), lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: absoluteUrl("/team"), lastModified: now, changeFrequency: "monthly", priority: 0.75 },

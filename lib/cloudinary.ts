@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 
 export const CLOUDINARY_ALLOWED_FORMATS = "jpg,png,webp";
-export type CloudinaryUploadFolder = "iilm-bnv/applications" | "iilm-bnv/team" | "iilm-bnv/star-ideators";
+export type CloudinaryUploadFolder = "iilm-bnv/applications" | "iilm-bnv/team" | "iilm-bnv/star-ideators" | "iilm-bnv/event-gallery";
 
 /**
  * Create a short-lived signed upload configuration. The image is uploaded by the

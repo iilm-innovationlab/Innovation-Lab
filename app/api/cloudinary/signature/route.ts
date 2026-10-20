@@ -40,6 +40,9 @@ export async function POST(request: Request) {
     } else if (purpose === "star-ideators") {
       if (!(await isAuthorizedAdmin(request))) return NextResponse.json({ ok: false, error: "Only an authorized admin can upload a Star Ideator picture." }, { status: 403 });
       folder = "iilm-bnv/star-ideators";
+    } else if (purpose === "event-gallery") {
+      if (!(await isAuthorizedAdmin(request))) return NextResponse.json({ ok: false, error: "Only an authorized admin can upload event gallery photos." }, { status: 403 });
+      folder = "iilm-bnv/event-gallery";
     } else {
       return NextResponse.json({ ok: false, error: "Invalid image upload purpose." }, { status: 400 });
     }
