@@ -6,7 +6,7 @@ export default function MaturityJourney(){
  return <div className="maturity-journey">
   <div className="maturity-line" aria-hidden="true" />
   {maturitySteps.map((s,i)=><button key={s.value} className={`maturity-card ${active===i?"is-active":""}`} onClick={()=>setActive(i)}>
-   <span className="maturity-value">{s.value}</span><small>{s.community}</small><h3>{s.title}</h3><p>{s.description}</p><b>{i<3?"→":"✦"}</b>
+   <span className="maturity-value">{s.value}</span><small>{s.community}</small><h3>{s.title}</h3><p>{s.description}</p>
   </button>)}
  </div>
 }
