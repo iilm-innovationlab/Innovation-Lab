@@ -170,7 +170,7 @@ export default async function Home() {
       <section className="flow-section section">
         <div className="container">
           <ScrollReveal><SectionLabel>Roadmap in motion</SectionLabel><h2 className="mega roadmap-motion-title">From “what if?” to<br /><i>“we built it.”</i></h2></ScrollReveal>
-          <div className="flow-list">{moves.map(([n, t, d], i) => <ScrollReveal key={n} delay={i * 45}><div className="flow-item"><span>{n}</span><h3>{t}</h3><p>{d}</p><b>↗</b></div></ScrollReveal>)}</div>
+          <div className="flow-list">{moves.map(([n, t, d], i) => <ScrollReveal key={n} delay={i * 45}><div className="flow-item"><span>{n}</span><h3>{t}</h3><p>{d}</p></div></ScrollReveal>)}</div>
         </div>
       </section>
 

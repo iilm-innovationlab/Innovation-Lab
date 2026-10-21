@@ -41,7 +41,7 @@ export default function Journey() {
               <h3>{stage.name}</h3>
               <p className="journey-stage-line">“{stage.line}”</p>
               <p className="journey-stage-body">{stage.body}</p>
-              {stage.href.startsWith("https://") ? <a href={stage.href} target="_blank" rel="noreferrer noopener" className="journey-stage-cta">{stage.cta}<span aria-hidden="true">↗</span></a> : <Link href={stage.href} className="journey-stage-cta">{stage.cta}<span aria-hidden="true">↗</span></Link>}
+              {stage.href.startsWith("https://") ? <a href={stage.href} target="_blank" rel="noreferrer noopener" className="journey-stage-cta">{stage.cta}</a> : <Link href={stage.href} className="journey-stage-cta">{stage.cta}</Link>}
             </div>
           </article>
         ))}
