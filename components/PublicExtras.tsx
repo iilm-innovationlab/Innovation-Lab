@@ -27,7 +27,7 @@ export function PublicSearch() {
 
 export function FAQSection() {
   const [open, setOpen] = useState<number | null>(null);
-  return <section className="faq section" id="faq"><div className="container faq-grid"><div><span className="eyebrow">GOOD TO KNOW</span><h2 className="mega">Questions,<br/><i>answered.</i></h2><p>Everything you need before you jump in.</p></div><div className="faq-list">{faq.map(([q, a], i) => <button className={`faq-item ${open === i ? "is-open" : ""}`} key={q} onClick={() => setOpen(open === i ? null : i)}><span>{q}</span><b>{open === i ? "−" : "+"}</b>{open === i && <p>{a}</p>}</button>)}</div></div></section>;
+  return <section className="faq section" id="faq"><div className="container faq-grid"><div><h2 className="mega">Questions,<br/><i>answered.</i></h2><p>Everything you need before you jump in.</p></div><div className="faq-list">{faq.map(([q, a], i) => <button className={`faq-item ${open === i ? "is-open" : ""}`} key={q} onClick={() => setOpen(open === i ? null : i)}><span>{q}</span><b>{open === i ? "−" : "+"}</b>{open === i && <p>{a}</p>}</button>)}</div></div></section>;
 }
 
 export function ResourcesSection() {

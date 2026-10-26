@@ -11,7 +11,7 @@ import ReelSlider from "@/components/ReelSlider";
 import SectionLabel from "@/components/SectionLabel";
 import GoogleFormButton from "@/components/GoogleFormButton";
 import { bnvIndiaPortfolio, forms } from "@/lib/content";
-import { FAQSection, CommunityCounts } from "@/components/PublicExtras";
+import { FAQSection } from "@/components/PublicExtras";
 import PushNotifications from "@/components/PushNotifications";
 import EventCalendar from "@/components/EventCalendar";
 
@@ -61,14 +61,8 @@ async function getPublishedTeam() {
   } catch { return []; }
 }
 
-async function getCommunityCounts() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL; const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return {};
-  try { const res = await fetch(`${url}/rest/v1/communities?select=name,member_count&published=eq.true&limit=10`, { headers: { apikey: anon }, next: { revalidate: 900, tags: ["public-communities"] } }); if (!res.ok) return {}; const rows = await res.json(); return Object.fromEntries((rows as Array<{ name: string; member_count: number }>).map((r) => [r.name, r.member_count])); } catch { return {}; }
-}
-
 export default async function Home() {
-  const [events, communityCounts, teamMembers, shorts] = await Promise.all([getPublishedEvents(), getCommunityCounts(), getPublishedTeam(), getPublishedShorts()]);
+  const [events, teamMembers, shorts] = await Promise.all([getPublishedEvents(), getPublishedTeam(), getPublishedShorts()]);
   return (
     <main className="homepage-main">
       <Hero />
@@ -78,8 +72,7 @@ export default async function Home() {
       <section className="manifesto section" id="lab">
         <div className="container manifesto-grid">
           <ScrollReveal>
-            <SectionLabel>01 / What is Innovation Lab?</SectionLabel>
-            <h2 className="mega">A place to turn <i>curiosity</i> into action.</h2>
+            <h2 className="mega section-name-heading">What is <i>Innovation Lab?</i></h2>
           </ScrollReveal>
           <ScrollReveal delay={140}>
             <div className="manifesto-side">
@@ -92,9 +85,6 @@ export default async function Home() {
                 <span>Validated something? Build it.</span>
                 <span>Already building? Find your people.</span>
               </div>
-              <Link href="/about#innovation-lab" className="text-link" data-cursor>
-                Explore Innovation Lab in detail <span>↗</span>
-              </Link>
             </div>
           </ScrollReveal>
         </div>
@@ -104,10 +94,9 @@ export default async function Home() {
       <section className="bnv section" id="bnv">
         <div className="container">
           <ScrollReveal>
-            <SectionLabel>02 / What is Beyond Next Ventures?</SectionLabel>
             <div className="bnv-head">
               <div className="bnv-copy">
-                <h2 className="mega">Japan × India.<br /><i>Deep tech × people.</i></h2>
+                <h2 className="mega section-name-heading">What is <i>Beyond Next Ventures?</i></h2>
                 <p>
                   Beyond Next Ventures (BNV) is a Japan-based venture firm focused on deep-tech investment and ecosystem building. Its India work connects students and builders with a wider network of ventures, investment experience and people working on ambitious technologies.
                 </p>
@@ -119,23 +108,18 @@ export default async function Home() {
             </div>
           </ScrollReveal>
           <div className="bnv-facts bnv-facts-single">
-            <div><b>₹600 crore</b><span>Fund raised</span></div>
+            <div><span className="bnv-fund-label">Fund raised</span><b><i>₹</i>600<em>crore</em></b><span className="bnv-fund-note">Deep-tech investing across ventures</span></div>
           </div>
-          <div className="bnv-bridge">
-            <div className="bnv-side"><small>IILM</small><strong>Campus</strong><strong>Students</strong><strong>Learning</strong><strong>Community</strong></div>
-            <div className="bnv-x">×</div>
-            <div className="bnv-side"><small>BNV</small><strong>Venture ecosystem</strong><strong>Investment</strong><strong>Mentorship</strong><strong>Japan–India</strong></div>
-            <div className="bnv-result"><span>RESULT</span><b>IILM × BNV<br />Innovation Lab</b></div>
-          </div>
+
         </div>
       </section>
 
 
 
       <section className="visual-story" id="starting-point">
-        <div className="story-image story-one"><Image src="/campus-2.webp" alt="IILM campus" fill sizes="50vw" /></div>
+        <div className="story-image story-one"><Image src="/campus-starting-left.jpeg" alt="IILM campus courtyard" fill sizes="50vw" /></div>
         <div className="story-copy"><ScrollReveal><SectionLabel>Start anywhere</SectionLabel><h2>No idea yet?<br /><span>That’s okay.</span></h2><p>You can come in curious. Explore entrepreneurship, join the Explorer community, attend sessions, find problems and learn how builders think.</p><Link href="#journey" className="text-link" data-cursor>Find your starting point <span>↗</span></Link></ScrollReveal></div>
-        <div className="story-image story-two"><Image src="/campus-4.webp" alt="IILM campus building" fill sizes="30vw" /></div>
+        <div className="story-image story-two"><Image src="/campus-starting-right.jpeg" alt="IILM campus building" fill sizes="30vw" /></div>
       </section>
 
       {/* 03 — MEMBER JOURNEY */}
@@ -145,7 +129,7 @@ export default async function Home() {
             <SectionLabel>03 / Member Journey Framework &amp; Roadmap</SectionLabel>
             <div className="section-heading-row">
               <div>
-                <h2 className="mega">Discover → <i>Explorer → Ideator → Founder.</i></h2>
+                <h2 className="mega">Member Journey <i>Framework &amp; Roadmap.</i></h2>
                 <p>Three communities, one progression from curiosity to serious execution.</p>
               </div>
               <span className="journey-progress">01 — 03</span>
@@ -177,10 +161,9 @@ export default async function Home() {
       {/* 04 — MEET THE TEAM */}
       <section className="team-section section" id="team">
         <div className="container">
-          <ScrollReveal><SectionLabel>04 / Meet Our Team</SectionLabel><h2 className="mega">Real people. <i>One ecosystem.</i></h2><p className="lead-copy">Meet the student team behind Campus Innovation Fellow and Social Media.</p></ScrollReveal>
+          <ScrollReveal><SectionLabel>04 / Meet Our Team</SectionLabel><h2 className="mega">Meet Our <i>Team.</i></h2><p className="lead-copy">Meet the student team behind Campus Innovation Fellow and Social Media.</p></ScrollReveal>
           <TeamGrid members={teamMembers} />
           
-          <Link href="/team" className="text-link team-show-all-link">Show all team members ↗</Link>
         </div>
       </section>
 
@@ -197,27 +180,16 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="community-section" id="explorer">
-        <div className="community-block community-explorer"><div className="community-num">01</div><div className="community-content"><SectionLabel>Explorer community</SectionLabel><h2>Start with<br /><em>curiosity.</em></h2><p>You don't need an idea yet. Explorer is for students who are curious about entrepreneurship and want to discover what they might build.</p><div className="chip-row"><span>Online sessions ≈ every 15 days</span><span>Workshops</span><span>Problem discovery</span><span>Startup exposure</span><span>Networking</span></div><a className="hero-btn hero-btn-red" href={forms.explorer} target="_blank" rel="noreferrer noopener">Become an Explorer ↗</a></div><div className="community-art"><div className="art-ring" /><div className="art-word">CURIOUS</div><div className="art-note">what if?</div></div></div>
-        <div className="community-block community-ideator" id="ideator"><div className="community-art ideator-art"><div className="grid-paper" /><div className="idea-card">IDEA<br /><b>→</b><br />TEST</div><div className="idea-note">talk to users.</div></div><div className="community-content"><div className="community-num">02</div><SectionLabel>Ideator community</SectionLabel><h2>Got an<br /><em>idea?</em></h2><p>Now let’s figure out whether it is worth building. Get guidance around market research, customer discovery, validation, refinement, prototyping and MVP development.</p><div className="chip-row"><span>Online IFP sessions</span><span>Market research</span><span>Customer discovery</span><span>Validation</span><span>Mentorship</span><span>MVP development</span></div><GoogleFormButton href={forms.ideator} label="Join Ideator" fallback="Open Ideator application" fallbackHref="/join/ideator" /></div></div>
-        <div className="community-block community-founder" id="founders"><div className="community-num">03</div><div className="community-content"><SectionLabel>Founder’s Club</SectionLabel><h2>Founder<br /><em>mode.</em></h2><p>Founder’s Club is the filtered, advanced community for students who have moved beyond validation into serious execution — prototype, MVP and venture building.</p><div className="chip-row"><span>Advanced mentorship</span><span>Angel investor connections</span><span>Incubation pathway</span><span>Japan opportunities</span><span>Hackathons</span><span>Venture building</span></div><span className="coming-soon">COMING SOON 🚀</span></div><div className="founder-art"><span>03</span><strong>BUILD<br />SERIOUSLY.</strong><i>launch / learn / repeat</i></div></div>
-      </section>
-
-
-
-      <section className="sessions section"><div className="container"><ScrollReveal><SectionLabel>Previous sessions</SectionLabel><div className="section-heading-row"><div><h2 className="mega">Learn. Meet. <i>Repeat.</i></h2><p>Session archives, photographs, speakers and takeaways will be published here from the admin panel.</p></div><Link href="/events" className="text-link">Open sessions archive ↗</Link></div></ScrollReveal><div className="archive-placeholder"><div className="archive-number">00</div><div><h3>Session archive is being curated.</h3><p>No session names, dates or speaker information are invented on this page.</p></div><span>ARCHIVE</span></div></div></section>
-
-      <CommunityCounts counts={communityCounts} />
       <FAQSection />
 
-      <section className="events section" id="events"><div className="container"><div className="section-heading-row"><div><SectionLabel>What’s happening?</SectionLabel><h2 className="mega">Show up.<br /><i>Make something.</i></h2></div><Link href="/events" className="text-link">View full calendar ↗</Link></div>{events.length ? <EventCalendar events={events} /> : <div className="empty-editorial"><div className="empty-stamp">SOON</div><div><h3>The calendar is ready for your first event.</h3><p>Published events created in Admin Studio will appear here automatically.</p></div><span>👀</span></div>}</div></section>
+      <section className="events section" id="events"><div className="container"><div className="section-heading-row"><div><SectionLabel>What’s happening?</SectionLabel><h2 className="mega">Show up.<br /><i>Make something.</i></h2></div><Link href="/events" className="text-link">View full calendar ↗</Link></div>{events.length ? <EventCalendar events={events} /> : <div className="empty-editorial"><div className="empty-stamp">SOON</div><div><h3>The calendar is ready for your first event.</h3><p>New events and sessions will be announced here.</p></div><span>👀</span></div>}</div></section>
 
       <section className="meme-strip"><div className="meme-card"><span>01</span><p>I came to college for a degree.</p><b>Me 6 months later:<br />building an MVP at 3 AM 💀</b></div><div className="meme-card offset"><span>02</span><p>“I’ll validate the idea first.”</p><b>Also me:<br />already designing the logo 💀</b></div></section>
 
-      <section className="final-cta section"><div className="final-blob" /><div className="container"><SectionLabel>The starting line</SectionLabel><h2>Your idea doesn't need<br />to be perfect.<br /><i>It just needs to start.</i></h2><p>Whether you’re curious, have an idea, or are already building something — there’s a place for you here.</p><Link href="/join" className="hero-btn hero-btn-red" data-cursor>Start your journey ↗</Link></div></section>
+      <section className="final-cta section"><div className="final-blob" /><div className="container"><SectionLabel>The starting line</SectionLabel><h2>Your idea doesn't need<br />to be perfect.<br /><i>It just needs to start.</i></h2><p>Whether you’re curious, have an idea, or are already building something — there’s a place for you here.</p><Link href="/join" className="hero-btn hero-btn-red" data-cursor>Join the Lab ↗</Link></div></section>
 
       {/* 06 — SOCIAL / FOLLOW */}
-      <section className="reels section" id="youtube-shorts"><div className="container"><SectionLabel>06 / Follow the Lab</SectionLabel><h2 className="mega">See what we’re building <i>IRL.</i></h2><p className="lead-copy">Watch the latest YouTube Shorts and follow the Lab as the community grows.</p><ReelSlider shorts={shorts} /><div className="follow"><span>IILM × BNV / SOCIAL</span><div className="follow-links"><a href="https://www.youtube.com/" target="_blank" rel="noreferrer noopener">YouTube Shorts ↗</a></div><small>YouTube Shorts are managed from Admin → Social.</small></div></div></section>
+      <section className="reels section" id="youtube-shorts"><div className="container"><SectionLabel>06 / Follow the Lab</SectionLabel><h2 className="mega">See what we’re building <i>IRL.</i></h2><p className="lead-copy">Watch the latest YouTube Shorts and follow the Lab as the community grows.</p><ReelSlider shorts={shorts} /></div></section>
     </main>
   );
 }

@@ -42,12 +42,10 @@ export default function ReelSlider({ shorts }: { shorts: Short[] }) {
             </div>
           </article>
         ))}
-      </div> : <div className="empty-editorial"><div className="empty-stamp">PLAY</div><div><h3>New Shorts are coming soon.</h3><p>Published videos will appear here when the Lab team adds them in Admin Studio.</p></div></div>}
+      </div> : <div className="empty-editorial"><div className="empty-stamp">PLAY</div><div><h3>New Shorts are coming soon.</h3><p>New videos will appear here soon. Follow along for updates.</p></div></div>}
 
       <div className="shorts-footer">
         <span>Swipe / drag to explore · Play each Short directly here</span>
-        <span className="shorts-line" aria-hidden="true"><i /></span>
-        <a href="https://www.youtube.com/" target="_blank" rel="noreferrer noopener">YouTube ↗</a>
       </div>
     </div>
   );

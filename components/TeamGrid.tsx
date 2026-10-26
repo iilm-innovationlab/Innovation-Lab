@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { optimizedCloudinaryImageUrl } from "@/lib/cloudinary-url";
 
 type TeamMember = {
@@ -19,19 +20,30 @@ type TeamMember = {
 };
 
 export default function TeamGrid({ members, className = "" }: { members: TeamMember[]; className?: string }) {
-  const teamSlots = members.map((member, index) => ({
+  const [showAllMembers, setShowAllMembers] = useState(false);
+  const isDedicatedTeamPage = className.split(" ").includes("team-page-grid");
+  const featuredHead: TeamMember = {
+    id: "gaurav-saxena",
+    name: "Gaurav Saxena",
+    role: "Head",
+    team: "Head",
+    campus: "IILM × BNV Innovation Lab",
+    photo_url: "/team/gaurav-saxena.webp",
+  };
+
+  const teamSlots = [featuredHead, ...members.filter((member) => member.id !== featuredHead.id)].map((member, index) => ({
     ...member,
     number: String(index + 1).padStart(2, "0"),
     degree: member.degree_program || member.degree || "",
     program: member.program || "",
     year: member.year_of_study || member.year || "",
     campus: member.campus || "Campus not specified",
-    team: member.team === "Campus Innovation Fellow" ? "Campus Innovation Fellow" : "Social Media Team",
+    team: member.role === "Head" || member.team === "Head" ? "Head" : member.team === "Campus Innovation Fellow" ? "Campus Innovation Fellow" : "Social Media Team",
     role: member.role || "Team member",
   }));
 
   if (teamSlots.length === 0) {
-    return <div className="empty-editorial"><div className="empty-stamp">TEAM</div><div><h3>Team profiles are being prepared.</h3><p>Verified team members will appear here once they are published in Admin Studio.</p></div></div>;
+    return <div className="empty-editorial"><div className="empty-stamp">TEAM</div><div><h3>Team profiles are being prepared.</h3><p>Our team profiles will be available here soon.</p></div></div>;
   }
 
   return (
@@ -43,7 +55,7 @@ export default function TeamGrid({ members, className = "" }: { members: TeamMem
         </div>
       </div>
 
-      <div className={`team-grid ${className}`.trim()}>
+      <div id="team-grid-list" className={`team-grid ${className} ${showAllMembers ? "team-grid--expanded" : ""}`.trim()}>
         {teamSlots.map((member) => (
           <article key={member.id} className="team-grid-card">
             <div className="team-card-visual">
@@ -69,6 +81,18 @@ export default function TeamGrid({ members, className = "" }: { members: TeamMem
           </article>
         ))}
       </div>
+      {!isDedicatedTeamPage && teamSlots.length > 4 && (
+        <button
+          type="button"
+          className={`team-members-toggle${showAllMembers ? " is-expanded" : ""}`}
+          aria-expanded={showAllMembers}
+          aria-controls="team-grid-list"
+          onClick={() => setShowAllMembers((current) => !current)}
+        >
+          <span>{showAllMembers ? "Show fewer team members" : "Show all team members"}</span>
+          <span className="team-members-toggle-icon" aria-hidden="true">&#9662;</span>
+        </button>
+      )}
     </div>
   );
 }

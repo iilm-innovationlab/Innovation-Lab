@@ -12,7 +12,7 @@ export default function Hero(){
     <div className="hero-copy-award">
       <h1><span>You don’t need</span><em>an idea.</em><strong>You just need curiosity.</strong></h1>
       <p>From “What if?” to “We built it.” A place to explore problems, develop ideas, validate concepts, build prototypes and move toward entrepreneurship.</p>
-      <div className="hero-actions"><Link href="#journey" className="hero-btn hero-btn-red" data-cursor>Start your journey <span>↗</span></Link><Link href="#journey" className="hero-btn hero-btn-ghost" data-cursor>How to Be a Member <span>↗</span></Link></div>
+      <div className="hero-actions"><Link href="#journey" className="hero-btn hero-btn-red" data-cursor>Join the Lab <span>↗</span></Link><Link href="#journey" className="hero-btn hero-btn-ghost" data-cursor>How to Be a Member <span>↗</span></Link></div>
     </div>
     <div className="hero-stage" ref={stage}>
       <div className="hero-image-main"><Image src="/campus-2.webp" alt="IILM campus courtyard" fill priority loading="eager" sizes="(max-width: 900px) 92vw, 68vw" unoptimized/></div>

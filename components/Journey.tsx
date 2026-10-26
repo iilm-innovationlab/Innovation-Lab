@@ -5,10 +5,9 @@ import { forms } from "@/lib/content";
 import { useEffect, useRef, useState } from "react";
 
 const stages = [
-  { n: "01", name: "Discover", line: "I’m curious.", body: "Notice real problems, explore your interests and discover where your curiosity can lead.", meta: "Start with curiosity", cta: "Explore the Lab", href: "/about#innovation-lab", tone: "red" },
-  { n: "02", name: "Explorer", line: "I’m finding direction.", body: "Explore opportunities, research problems, join workshops and learn alongside other students.", meta: "Learn and explore", cta: "Become an Explorer", href: forms.explorer, tone: "navy" },
-  { n: "03", name: "Ideator", line: "I have an idea.", body: "Turn assumptions into evidence through customer discovery, research, validation and prototyping.", meta: "Test your ideas", cta: "Join Ideator", href: forms.ideator, tone: "green" },
-  { n: "04", name: "Founder", line: "I’m building it.", body: "Move into serious execution, build a venture and work towards real-world impact with ecosystem support.", meta: "Build something real", cta: "Explore opportunities", href: "/join", tone: "gold" },
+  { n: "01", name: "Explorer", line: "I’m finding direction.", body: "Explore opportunities, research problems, join workshops and learn alongside other students.", meta: "Learn and explore", cta: "Become an Explorer", href: forms.explorer, tone: "navy", comingSoon: false },
+  { n: "02", name: "Ideator", line: "I have an idea.", body: "Turn assumptions into evidence through customer discovery, research, validation and prototyping.", meta: "Test your ideas", cta: "Join Ideator", href: forms.ideator, tone: "green", comingSoon: false },
+  { n: "03", name: "Founder", line: "I’m building it.", body: "Move into serious execution, build a venture and work towards real-world impact with ecosystem support.", meta: "Build something real", cta: "Coming Soon", href: "", tone: "gold", comingSoon: true },
 ];
 
 export default function Journey() {
@@ -37,11 +36,11 @@ export default function Journey() {
           <article ref={(node) => { stageRefs.current[index] = node; }} key={stage.n} className={`journey-scroll-stage tone-${stage.tone}${active === index ? " is-active" : ""}`}>
             <div className="journey-stage-marker"><span>{stage.n}</span></div>
             <div className="journey-stage-card">
-              <div className="journey-stage-topline"><span>{stage.meta}</span><span>{stage.n} / 04</span></div>
+              <div className="journey-stage-topline"><span>{stage.meta}</span><span>{stage.n} / 03</span></div>
               <h3>{stage.name}</h3>
               <p className="journey-stage-line">“{stage.line}”</p>
               <p className="journey-stage-body">{stage.body}</p>
-              {stage.href.startsWith("https://") ? <a href={stage.href} target="_blank" rel="noreferrer noopener" className="journey-stage-cta">{stage.cta}</a> : <Link href={stage.href} className="journey-stage-cta">{stage.cta}</Link>}
+              {stage.comingSoon ? <span className="journey-stage-cta journey-stage-cta-disabled" aria-disabled="true">Coming Soon</span> : stage.href.startsWith("https://") ? <a href={stage.href} target="_blank" rel="noreferrer noopener" className="journey-stage-cta">{stage.cta}</a> : <Link href={stage.href} className="journey-stage-cta">{stage.cta}</Link>}
             </div>
           </article>
         ))}
