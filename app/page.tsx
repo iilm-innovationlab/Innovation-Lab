@@ -3,6 +3,8 @@ import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import Hero from "@/components/Hero";
+import CloudinaryImage from "@/components/CloudinaryImage";
+import { campusImages } from "@/lib/cloudinary-image";
 import Journey from "@/components/Journey";
 import MaturityJourney from "@/components/MaturityJourney";
 import TeamGrid from "@/components/TeamGrid";
@@ -117,9 +119,9 @@ export default async function Home() {
 
 
       <section className="visual-story" id="starting-point">
-        <div className="story-image story-one"><Image src="/campus-starting-left.jpeg" alt="IILM campus courtyard" fill sizes="50vw" /></div>
+        <div className="story-image story-one"><CloudinaryImage publicId={campusImages.left} alt="IILM campus courtyard" sizes="(max-width: 680px) 100vw, (max-width: 1000px) 50vw, 34vw" /></div>
         <div className="story-copy"><ScrollReveal><SectionLabel>Start anywhere</SectionLabel><h2>No idea yet?<br /><span>That’s okay.</span></h2><p>You can come in curious. Explore entrepreneurship, join the Explorer community, attend sessions, find problems and learn how builders think.</p><Link href="#journey" className="text-link" data-cursor>Find your starting point <span>↗</span></Link></ScrollReveal></div>
-        <div className="story-image story-two"><Image src="/campus-starting-right.jpeg" alt="IILM campus building" fill sizes="30vw" /></div>
+        <div className="story-image story-two"><CloudinaryImage publicId={campusImages.right} alt="IILM campus building" sizes="(max-width: 680px) 100vw, (max-width: 1000px) 50vw, 34vw" /></div>
       </section>
 
       {/* 03 — MEMBER JOURNEY */}

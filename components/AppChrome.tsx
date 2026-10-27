@@ -4,6 +4,7 @@ import SiteHeader from "@/components/SiteHeader";
 import Footer from "@/components/Footer";
 import MagneticCursor from "@/components/MagneticCursor";
 import InnovationLoader from "@/components/InnovationLoader";
+import MotionLayer from "@/components/MotionLayer";
 
 export default function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,6 +16,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
     <>
       <InnovationLoader />
       <MagneticCursor />
+      <MotionLayer />
       <SiteHeader />
       {children}
       <Footer />

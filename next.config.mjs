@@ -9,6 +9,7 @@ const nextConfig = {
   // Permit the trusted LAN address used to open the dev server on a phone.
   allowedDevOrigins: ['10.0.46.131'],
   poweredByHeader: false,
+  images: { deviceSizes: [640, 828, 1080, 1280, 1600] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
